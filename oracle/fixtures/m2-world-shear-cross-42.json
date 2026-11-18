@@ -1,0 +1,22 @@
+{
+"skeleton": { "spine": "4.2.40" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "a", "parent": "root", "x": 10, "rotation": 15, "length": 30 },
+	{ "name": "c", "parent": "a", "x": 30, "length": 20 },
+	{ "name": "t", "parent": "root", "x": 60, "y": 25, "rotation": 40, "scaleX": 1.3, "shearY": 25 }
+],
+"slots": [ { "name": "s", "bone": "c", "attachment": "p" } ],
+"transform": [ { "name": "world", "bones": [ "a" ], "target": "t", "mixRotate": 0.3, "mixX": 0.2, "mixScaleX": 0.5, "mixShearY": -0.4 } ],
+"skins": [ { "name": "default", "attachments": { "s": { "p": { "type": "point", "x": 5, "y": 3 } } } } ],
+"animations": {
+	"a": {
+		"bones": { "t": { "shear": [ { "y": 25 }, { "time": 1, "x": 10, "y": -30 } ] } },
+		"transform": { "world": [
+			{ "mixRotate": 0.3, "mixX": 0.2, "mixScaleX": 0.5, "mixShearY": -0.4 },
+			{ "time": 0.5, "mixRotate": 0.3, "mixX": 0.2, "mixScaleX": 0.5, "mixShearY": 0.9, "curve": [ 0.6, 0.3, 0.8, 0.3, 0.6, 0.2, 0.8, 0.2, 0.6, 0.2, 0.8, 0.2, 0.6, 0.5, 0.8, 0.5, 0.6, 0.5, 0.8, 0.5, 0.6, 1.4, 0.8, 0.1 ] },
+			{ "time": 1, "mixRotate": 0.3, "mixX": 0.2, "mixScaleX": 0.5, "mixShearY": 0.2 }
+		] }
+	}
+}
+}

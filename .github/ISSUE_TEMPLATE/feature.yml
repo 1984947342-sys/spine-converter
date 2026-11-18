@@ -1,0 +1,15 @@
+name: Feature request
+description: A version, format or interface the converter does not cover
+labels: [enhancement]
+body:
+  - type: textarea
+    id: case
+    attributes:
+      label: Use case
+      description: What you convert, between which versions and formats, and in which engine or tool
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal

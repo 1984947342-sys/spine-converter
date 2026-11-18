@@ -1,0 +1,27 @@
+{
+"skeleton": { "spine": "3.8.99" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "arm", "parent": "root", "length": 50 },
+	{ "name": "hand", "parent": "arm", "x": 50, "length": 30 },
+	{ "name": "eye", "parent": "arm", "x": 20, "y": 10, "length": 10 },
+	{ "name": "t", "parent": "root", "x": 100, "y": 30 }
+],
+"transform": [
+	{ "name": "follow", "bones": [ "hand", "eye" ], "target": "t", "x": -60, "y": -20, "rotateMix": 0.5, "translateMix": 0.5, "scaleMix": 0.5, "shearMix": 0.5 },
+	{ "name": "lift", "order": 1, "bones": [ "arm" ], "target": "t", "rotation": 20, "rotateMix": 0.3, "translateMix": 0, "scaleMix": 0, "shearMix": 0 }
+],
+"animations": {
+	"move": {
+		"bones": {
+			"t": {
+				"rotate": [ { "angle": 0 }, { "time": 1, "angle": 60 } ],
+				"translate": [ { "x": 0, "y": 0 }, { "time": 1, "x": 40, "y": -20 } ]
+			}
+		},
+		"transform": {
+			"follow": [ { "rotateMix": 0.2, "translateMix": 0.2 }, { "time": 1, "rotateMix": 1, "translateMix": 1 } ]
+		}
+	}
+}
+}

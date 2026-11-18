@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Output mirrors oracle/dump_c.c -->
+  <PropertyGroup>
+    <SpineVersion>3.5</SpineVersion>
+  </PropertyGroup>
+  <Import Project="..\Dump.props" />
+</Project>

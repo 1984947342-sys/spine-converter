@@ -1,0 +1,26 @@
+{
+"skeleton": { "spine": "3.5.03-beta", "width": 0, "height": 0 },
+"bones": [
+	{ "name": "root" },
+	{ "name": "flip", "parent": "root", "scaleX": -1 },
+	{ "name": "target", "parent": "flip", "x": 40, "rotation": 20 },
+	{ "name": "bone", "parent": "root", "x": -40, "rotation": 50, "length": 50 },
+	{ "name": "bone2", "parent": "root", "y": 30, "rotation": -120, "length": 40 }
+],
+"slots": [ { "name": "s", "bone": "bone" } ],
+"transform": [
+	{ "name": "offset", "bones": [ "bone" ], "target": "target", "rotation": 150, "rotateMix": 0.6, "translateMix": 0, "scaleMix": 0, "shearMix": 0 },
+	{ "name": "offset2", "order": 1, "bones": [ "bone2" ], "target": "target", "rotation": -170, "rotateMix": 0.35, "translateMix": 0.5, "scaleMix": 0, "shearMix": 0 }
+],
+"skins": { "default": {} },
+"animations": {
+	"a": {
+		"bones": {
+			"target": { "rotate": [ { "time": 0, "angle": 0 }, { "time": 1, "angle": 300 } ] },
+			"flip": { "scale": [ { "time": 0, "x": 1, "y": 1 }, { "time": 0.5, "x": 1, "y": 1 }, { "time": 0.51, "x": -1, "y": 1 }, { "time": 1, "x": -1, "y": 1 } ] },
+			"bone": { "rotate": [ { "time": 0, "angle": 0 }, { "time": 1, "angle": -200 } ] }
+		},
+		"transform": { "offset": [ { "time": 0, "rotateMix": 0.6, "translateMix": 0, "scaleMix": 0, "shearMix": 0 }, { "time": 1, "rotateMix": 0.9, "translateMix": 0, "scaleMix": 0, "shearMix": 0 } ] }
+	}
+}
+}

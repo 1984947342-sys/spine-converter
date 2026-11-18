@@ -1,0 +1,14 @@
+[configuration]
+
+entry_symbol = "spine_converter_godot_init"
+compatibility_minimum = "4.3"
+reloadable = false
+
+[libraries]
+
+windows.x86_64 = "bin/windows.x86_64/spine_converter_godot.dll"
+windows.x86_32 = "bin/windows.x86_32/spine_converter_godot.dll"
+windows.arm64 = "bin/windows.arm64/spine_converter_godot.dll"
+macos = "bin/macos/libspine_converter_godot.dylib"
+linux.x86_64 = "bin/linux.x86_64/libspine_converter_godot.so"
+linux.arm64 = "bin/linux.arm64/libspine_converter_godot.so"

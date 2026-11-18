@@ -1,0 +1,46 @@
+{
+  "name": "spine-converter",
+  "version": "1.0.0",
+  "description": "Convert Spine skeleton data between every version from 3.5 to 4.3, WebAssembly build",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "an5w1r <an5w1r@163.com>",
+  "homepage": "https://github.com/MindsMaster/spine-converter/tree/main/bindings/js#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MindsMaster/spine-converter.git",
+    "directory": "bindings/js"
+  },
+  "bugs": "https://github.com/MindsMaster/spine-converter/issues",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./spine_converter.wasm": "./dist/spine_converter.wasm"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "LICENSE-MIT"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "spine",
+    "esotericsoftware",
+    "skeleton",
+    "converter",
+    "wasm"
+  ],
+  "packageManager": "pnpm@12.10.1",
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').copyFileSync('../../zig-out/bin/spine_converter.wasm','dist/spine_converter.wasm');require('fs').copyFileSync('../../LICENSE','LICENSE');require('fs').copyFileSync('../../LICENSE-MIT','LICENSE-MIT')\"",
+    "test": "node --test \"test/*.test.js\""
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

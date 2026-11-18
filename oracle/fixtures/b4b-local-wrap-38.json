@@ -1,0 +1,25 @@
+{
+"skeleton": { "spine": "3.8.99" },
+"bones": [
+	{ "name": "root", "rotation": 20, "scaleX": 1.2, "scaleY": 0.8 },
+	{ "name": "parent", "parent": "root", "x": 12, "rotation": 30, "scaleX": 1.3, "scaleY": 0.7 },
+	{ "name": "child", "parent": "parent", "x": 20, "length": 30, "rotation": 15 },
+	{ "name": "target", "parent": "root", "x": 60, "y": 40, "rotation": 45, "scaleX": 0.9, "scaleY": 1.1 }
+],
+"transform": [
+	{ "name": "wrap", "bones": [ "parent" ], "target": "target", "local": true,
+	  "rotation": 12, "x": 3, "y": -7, "shearY": -375,
+	  "rotateMix": 0.5, "translateMix": 0.5, "scaleMix": 0, "shearMix": 0.5 },
+	{ "name": "spin", "order": 1, "bones": [ "child" ], "target": "target", "local": true, "rotation": 400,
+	  "rotateMix": -0.1, "translateMix": 0, "scaleMix": 0, "shearMix": 0 }
+],
+"animations": {
+	"move": {
+		"bones": {
+			"target": { "translate": [ {}, { "time": 1, "x": 35, "y": -20 } ], "rotate": [ { "angle": -30 }, { "time": 1, "angle": 60 } ] },
+			"parent": { "shear": [ {}, { "time": 1, "y": 40 } ] }
+		},
+		"transform": { "wrap": [ { "rotateMix": 0.2, "translateMix": 0.5, "scaleMix": 0, "shearMix": 0.8 }, { "time": 1, "rotateMix": 0.7, "translateMix": 0.5, "scaleMix": 0, "shearMix": 0.3 } ] }
+	}
+}
+}

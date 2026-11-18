@@ -1,0 +1,5 @@
+from 3.5.03-beta
+to 4.3
+code bone.noRotation.approximated
+editor no_rotation_35
+rewrite yes

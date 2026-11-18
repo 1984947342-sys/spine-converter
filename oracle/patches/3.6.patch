@@ -1,0 +1,91 @@
+--- a/src/spine/PathConstraint.c
++++ b/src/spine/PathConstraint.c
+@@ -150,7 +150,7 @@
+ 		x = positions[p], y = positions[p + 1], dx = x - boneX, dy = y - boneY;
+ 		if (scale) {
+ 			length = lengths[i];
+-			if (length != 0) {
++			if (length >= EPSILON) {
+ 				s = (SQRT(dx * dx + dy * dy) / length - 1) * rotateMix + 1;
+ 				CONST_CAST(float, bone->a) *= s;
+ 				CONST_CAST(float, bone->c) *= s;
+@@ -162,11 +162,11 @@
+ 			float a = bone->a, b = bone->b, c = bone->c, d = bone->d, r, cosine, sine;
+ 			if (tangents)
+ 				r = positions[p - 1];
+-			else if (spaces[i + 1] == 0)
++			else if (spaces[i + 1] < EPSILON)
+ 				r = positions[p + 2];
+ 			else
+ 				r = ATAN2(dy, dx);
+-			r -= ATAN2(c, a) - offsetRotation * DEG_RAD;
++			r -= ATAN2(c, a);
+ 			if (tip) {
+ 				cosine = COS(r);
+ 				sine = SIN(r);
+@@ -216,7 +216,7 @@
+ 	float tt, ttt, u, uu, uuu;
+ 	float ut, ut3, uut3, utt3;
+ 	float x, y;
+-	if (p == 0 || _isNan(p, 0)) p = 0.0001f;
++	if (p < EPSILON || _isNan(p, 0)) p = EPSILON;
+ 	tt = p * p, ttt = tt * p, u = 1 - p, uu = u * u, uuu = uu * u;
+ 	ut = u * p, ut3 = ut * 3, uut3 = u * ut3, utt3 = ut3 * p;
+ 	x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt, y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
+@@ -303,7 +303,7 @@
+ 					spVertexAttachment_computeWorldVertices(SUPER(path), target, curve * 6 + 2, 8, world, 0, 2);
+ 			}
+ 			_addCurvePosition(p, world[0], world[1], world[2], world[3], world[4], world[5], world[6], world[7], out, o,
+-				tangents || (i > 0 && space == 0));
++				tangents || (i > 0 && space < EPSILON));
+ 		}
+ 		return out;
+ 	}
+@@ -466,7 +466,7 @@
+ 			}
+ 			break;
+ 		}
+-		_addCurvePosition(p * 0.1f, x1, y1, cx1, cy1, cx2, cy2, x2, y2, out, o, tangents || (i > 0 && space == 0));
++		_addCurvePosition(p * 0.1f, x1, y1, cx1, cy1, cx2, cy2, x2, y2, out, o, tangents || (i > 0 && space < EPSILON));
+ 	}
+ 	return out;
+ }
+--- a/src/spine/TransformConstraint.c
++++ b/src/spine/TransformConstraint.c
+@@ -91,12 +91,12 @@
+ 		if (scaleMix > 0) {
+ 			s = SQRT(bone->a * bone->a + bone->c * bone->c);
+ 			ts = SQRT(ta * ta + tc * tc);
+-			if (s > 0.00001f) s = (s + (ts - s + self->data->offsetScaleX) * scaleMix) / s;
++			if (s != 0) s = (s + (ts - s + self->data->offsetScaleX) * scaleMix) / s;
+ 			CONST_CAST(float, bone->a) *= s;
+ 			CONST_CAST(float, bone->c) *= s;
+ 			s = SQRT(bone->b * bone->b + bone->d * bone->d);
+ 			ts = SQRT(tb * tb + td * td);
+-			if (s > 0.00001f) s = (s + (ts - s + self->data->offsetScaleY) * scaleMix) / s;
++			if (s != 0) s = (s + (ts - s + self->data->offsetScaleY) * scaleMix) / s;
+ 			CONST_CAST(float, bone->b) *= s;
+ 			CONST_CAST(float, bone->d) *= s;
+ 			modified = 1;
+@@ -206,8 +206,8 @@
+ 
+ 		scaleX = bone->ascaleX, scaleY = bone->ascaleY;
+ 		if (scaleMix > 0) {
+-			if (scaleX > 0.00001) scaleX = (scaleX + (target->ascaleX - scaleX + self->data->offsetScaleX) * scaleMix) / scaleX;
+-			if (scaleY > 0.00001) scaleY = (scaleY + (target->ascaleY - scaleY + self->data->offsetScaleY) * scaleMix) / scaleY;
++			if (scaleX != 0) scaleX = (scaleX + (target->ascaleX - scaleX + self->data->offsetScaleX) * scaleMix) / scaleX;
++			if (scaleY != 0) scaleY = (scaleY + (target->ascaleY - scaleY + self->data->offsetScaleY) * scaleMix) / scaleY;
+ 		}
+ 
+ 		shearY = bone->ashearY;
+@@ -246,8 +246,8 @@
+ 		scaleX = bone->ascaleX;
+ 		scaleY = bone->ascaleY;
+ 		if (scaleMix > 0) {
+-			if (scaleX > 0.00001f) scaleX *= ((target->ascaleX - 1 + self->data->offsetScaleX) * scaleMix) + 1;
+-			if (scaleY > 0.00001f) scaleY *= ((target->ascaleY - 1 + self->data->offsetScaleY) * scaleMix) + 1;
++			scaleX *= ((target->ascaleX - 1 + self->data->offsetScaleX) * scaleMix) + 1;
++			scaleY *= ((target->ascaleY - 1 + self->data->offsetScaleY) * scaleMix) + 1;
+ 		}
+ 
+ 		shearY = bone->ashearY;

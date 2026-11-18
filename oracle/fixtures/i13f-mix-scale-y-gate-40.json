@@ -1,0 +1,92 @@
+{
+	"skeleton": {
+		"spine": "4.0.64"
+	},
+	"bones": [
+		{
+			"name": "root"
+		},
+		{
+			"name": "b",
+			"parent": "root",
+			"x": 20,
+			"length": 40
+		},
+		{
+			"name": "t",
+			"parent": "root",
+			"x": 60,
+			"rotation": 30,
+			"scaleY": 2
+		}
+	],
+	"transform": [
+		{
+			"name": "stretch",
+			"bones": [
+				"b"
+			],
+			"target": "t",
+			"mixRotate": 0,
+			"mixX": 0,
+			"mixScaleX": 0,
+			"mixScaleY": 1,
+			"mixShearY": 0
+		}
+	],
+	"animations": {
+		"rise": {
+			"bones": {
+				"t": {
+					"scale": [
+						{
+							"x": 1,
+							"y": 2
+						},
+						{
+							"time": 1,
+							"x": 1,
+							"y": 3
+						}
+					],
+					"rotate": [
+						{
+							"value": 30
+						},
+						{
+							"time": 1,
+							"value": 50
+						}
+					]
+				}
+			},
+			"transform": {
+				"stretch": [
+					{
+						"mixRotate": 0,
+						"mixX": 0,
+						"mixScaleX": 0,
+						"mixScaleY": 0.4,
+						"mixShearY": 0
+					},
+					{
+						"time": 0.5,
+						"mixRotate": 0.5,
+						"mixX": 0.5,
+						"mixScaleX": 0,
+						"mixScaleY": 0.8,
+						"mixShearY": 0
+					},
+					{
+						"time": 1,
+						"mixRotate": 0,
+						"mixX": 0,
+						"mixScaleX": 0,
+						"mixScaleY": 1,
+						"mixShearY": 0
+					}
+				]
+			}
+		}
+	}
+}

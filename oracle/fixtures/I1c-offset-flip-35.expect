@@ -1,0 +1,5 @@
+from 3.5.03-beta
+to 3.5
+code transform.offsetFlip.approximated
+editor offset_reflect_35
+flip x

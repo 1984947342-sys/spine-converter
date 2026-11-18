@@ -1,0 +1,24 @@
+{
+"skeleton": { "spine": "4.0.59-beta" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "arm", "parent": "root", "length": 50 },
+	{ "name": "hand", "parent": "arm", "x": 50, "length": 30 },
+	{ "name": "x", "parent": "root", "x": -40 },
+	{ "name": "t", "parent": "root", "x": 100, "y": 30 }
+],
+"transform": [
+	{ "name": "follow", "bones": [ "x", "hand" ], "target": "t", "mixRotate": 0.5, "mixX": 0.5, "mixScaleX": 0, "mixShearY": 0 },
+	{ "name": "lift", "order": 1, "bones": [ "arm" ], "target": "t", "rotation": 20, "mixRotate": 0.3, "mixX": 0, "mixScaleX": 0, "mixShearY": 0 }
+],
+"animations": {
+	"move": {
+		"bones": {
+			"t": {
+				"rotate": [ { "value": 0 }, { "time": 1, "value": 60 } ],
+				"translate": [ { "x": 0, "y": 0 }, { "time": 1, "x": 40, "y": -20 } ]
+			}
+		}
+	}
+}
+}

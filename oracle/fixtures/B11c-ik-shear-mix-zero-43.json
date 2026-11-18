@@ -1,0 +1,23 @@
+{
+"skeleton": { "spine": "4.2.22" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "p", "parent": "root", "rotation": 10, "length": 40, "shearX": 20, "shearY": -15 },
+	{ "name": "c", "parent": "p", "x": 40, "y": 5, "length": 40, "shearY": 10 },
+	{ "name": "t", "parent": "root", "x": 50, "y": 30 }
+],
+"slots": [ { "name": "s", "bone": "c", "attachment": "pt" } ],
+"ik": [
+	{ "name": "i", "bones": [ "p", "c" ], "target": "t", "mix": 0.6, "bendPositive": false }
+],
+"skins": [ { "name": "default", "attachments": { "s": { "pt": { "type": "point", "x": 8, "y": 4 } } } } ],
+"animations": {
+	"a": {
+		"bones": {
+			"t": { "translate": [ { "x": -20 }, { "time": 1, "x": 10, "y": 20 } ] },
+			"p": { "shear": [ { "x": 5 }, { "time": 1, "x": -10, "y": 30 } ] }
+		},
+		"ik": { "i": [ { "mix": 0.6 }, { "time": 1, "mix": 0 } ] }
+	}
+}
+}

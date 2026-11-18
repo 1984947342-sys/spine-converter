@@ -1,0 +1,155 @@
+--- a/src/spine/SkeletonJson.cpp
++++ b/src/spine/SkeletonJson.cpp
+@@ -1185,7 +1185,7 @@
+ 			mixY = mixY2;
+ 			mixScaleX = mixScaleX2;
+ 			mixScaleY = mixScaleY2;
+-			mixScaleX = mixScaleX2;
++			mixShearY = mixShearY2;
+ 			keyMap = nextMap;
+ 		}
+ 
+--- a/src/spine/Atlas.cpp
++++ b/src/spine/Atlas.cpp
+@@ -290,6 +290,7 @@
+ 			_pages.add(page);
+ 		} else {
+ 			AtlasRegion *region = new (__FILE__, __LINE__) AtlasRegion();
++			region->index = -1;
+ 			region->page = page;
+ 			region->rendererObject = page->texture;
+ 			region->name = String(line->copy(), true);
+--- a/src/spine/Atlas.cpp
++++ b/src/spine/Atlas.cpp
+@@ -224,7 +224,7 @@
+ }
+ 
+ void Atlas::load(const char *begin, int length, const char *dir, bool createTexture) {
+-	static const char *formatNames[] = {"", "Alpha", "Intensity", "LuminanceAlpha", "RGB565", "RGBA4444", "RGB888",
++	static const char *formatNames[] = {"Alpha", "Intensity", "LuminanceAlpha", "RGB565", "RGBA4444", "RGB888",
+ 										"RGBA8888"};
+ 	static const char *textureFilterNames[] = {"", "Nearest", "Linear", "MipMap", "MipMapNearestNearest",
+ 											   "MipMapLinearNearest",
+@@ -266,7 +266,7 @@
+ 					page->width = entry[1].toInt();
+ 					page->height = entry[2].toInt();
+ 				} else if (entry[0].equals("format")) {
+-					page->format = (Format) indexOf(formatNames, 8, &entry[1]);
++					page->format = (Format) indexOf(formatNames, 7, &entry[1]);
+ 				} else if (entry[0].equals("filter")) {
+ 					page->minFilter = (TEXTURE_FILTER_ENUM) indexOf(textureFilterNames, 8, &entry[1]);
+ 					page->magFilter = (TEXTURE_FILTER_ENUM) indexOf(textureFilterNames, 8, &entry[2]);
+--- a/src/spine/TransformConstraint.cpp
++++ b/src/spine/TransformConstraint.cpp
+@@ -305,7 +305,7 @@
+ 		if (mixShearY != 0) {
+ 			float r = target._ashearY - shearY + _data._offsetShearY;
+ 			r -= (16384 - (int) (16384.499999999996 - r / 360)) * 360;
+-			bone._shearY += r * mixShearY;
++			shearY += r * mixShearY;
+ 		}
+ 
+ 		bone.updateWorldTransform(x, y, rotation, scaleX, scaleY, bone._ashearX, shearY);
+--- a/src/spine/Bone.cpp
++++ b/src/spine/Bone.cpp
+@@ -495,75 +495,33 @@
+ 		_ascaleY = MathUtil::sqrt(_b * _b + _d * _d);
+ 		_ashearX = 0;
+ 		_ashearY = MathUtil::atan2(_a * _b + _c * _d, _a * _d - _b * _c) * MathUtil::Rad_Deg;
+-	}
+-	float pa = parent->_a, pb = parent->_b, pc = parent->_c, pd = parent->_d;
+-	float pid = 1 / (pa * pd - pb * pc);
+-	float ia = pd * pid, ib = pb * pid, ic = pc * pid, id = pa * pid;
+-	float dx = _worldX - parent->_worldX, dy = _worldY - parent->_worldY;
+-	_ax = (dx * ia - dy * ib);
+-	_ay = (dy * id - dx * ic);
+-
+-	float ra, rb, rc, rd;
+-	if (_data.getTransformMode() == TransformMode_OnlyTranslation) {
+-		ra = _a;
+-		rb = _b;
+-		rc = _c;
+-		rd = _d;
+ 	} else {
+-		switch (_data.getTransformMode()) {
+-			case TransformMode_NoRotationOrReflection: {
+-				float s = MathUtil::abs(pa * pd - pb * pc) / (pa * pa + pc * pc);
+-				float sa = pa / _skeleton.getScaleX();
+-				float sc = pc / _skeleton.getScaleY();
+-				pb = -sc * s * _skeleton.getScaleX();
+-				pd = sa * s * _skeleton.getScaleY();
+-				pid = 1 / (pa * pd - pb * pc);
+-				ia = pd * pid;
+-				ib = pb * pid;
+-				break;
+-			}
+-			case TransformMode_NoScale:
+-			case TransformMode_NoScaleOrReflection: {
+-				float cos = MathUtil::cosDeg(_rotation), sin = MathUtil::sinDeg(_rotation);
+-				pa = (pa * cos + pb * sin) / _skeleton.getScaleX();
+-				pc = (pc * cos + pd * sin) / _skeleton.getScaleY();
+-				float s = MathUtil::sqrt(pa * pa + pc * pc);
+-				if (s > 0.00001f) s = 1 / s;
+-				pa *= s;
+-				pc *= s;
+-				s = MathUtil::sqrt(pa * pa + pc * pc);
+-				if (_data.getTransformMode() == TransformMode_NoScale && pid < 0 != (_skeleton.getScaleX() < 0 != _skeleton.getScaleY() < 0)) s = -s;
+-				float r = MathUtil::Pi / 2 + MathUtil::atan2(pc, pa);
+-				pb = MathUtil::cos(r) * s;
+-				pd = MathUtil::sin(r) * s;
+-				pid = 1 / (pa * pd - pb * pc);
+-				ia = pd * pid;
+-				ib = pb * pid;
+-				ic = pc * pid;
+-				id = pa * pid;
+-				break;
+-			}
+-			default:
+-				break;
++		float pa = parent->_a, pb = parent->_b, pc = parent->_c, pd = parent->_d;
++		float pid = 1 / (pa * pd - pb * pc);
++		float dx = _worldX - parent->_worldX, dy = _worldY - parent->_worldY;
++		float ia = pid * pd;
++		float id = pid * pa;
++		float ib = pid * pb;
++		float ic = pid * pc;
++		float ra = ia * _a - ib * _c;
++		float rb = ia * _b - ib * _d;
++		float rc = id * _c - ic * _a;
++		float rd = id * _d - ic * _b;
++		_ax = (dx * pd * pid - dy * pb * pid);
++		_ay = (dy * pa * pid - dx * pc * pid);
++		_ashearX = 0;
++		_ascaleX = MathUtil::sqrt(ra * ra + rc * rc);
++		if (_ascaleX > 0.0001f) {
++			float det = ra * rd - rb * rc;
++			_ascaleY = det / _ascaleX;
++			_ashearY = MathUtil::atan2(ra * rb + rc * rd, det) * MathUtil::Rad_Deg;
++			_arotation = MathUtil::atan2(rc, ra) * MathUtil::Rad_Deg;
++		} else {
++			_ascaleX = 0;
++			_ascaleY = MathUtil::sqrt(rb * rb + rd * rd);
++			_ashearY = 0;
++			_arotation = 90 - MathUtil::atan2(rd, rb) * MathUtil::Rad_Deg;
+ 		}
+-		ra = ia * _a - ib * _c;
+-		rb = ia * _b - ib * _d;
+-		rc = id * _c - ic * _a;
+-		rd = id * _d - ic * _b;
+-	}
+-
+-	_ashearX = 0;
+-	_ascaleX = MathUtil::sqrt(ra * ra + rc * rc);
+-	if (_ascaleX > 0.0001f) {
+-		float det = ra * rd - rb * rc;
+-		_ascaleY = det / _ascaleX;
+-		_ashearY = -MathUtil::atan2(ra * rb + rc * rd, det) * MathUtil::Rad_Deg;
+-		_arotation = MathUtil::atan2(rc, ra) * MathUtil::Rad_Deg;
+-	} else {
+-		_ascaleX = 0;
+-		_ascaleY = MathUtil::sqrt(rb * rb + rd * rd);
+-		_ashearY = 0;
+-		_arotation = 90 - MathUtil::atan2(rd, rb) * MathUtil::Rad_Deg;
+ 	}
+ }
+ 

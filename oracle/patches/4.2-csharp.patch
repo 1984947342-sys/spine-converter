@@ -1,0 +1,39 @@
+--- a/src/Atlas.cs
++++ b/src/Atlas.cs
+@@ -353,7 +353,7 @@
+ 		public int packedHeight { get { return height; } set { height = value; } }
+ 		public int degrees;
+ 		public bool rotate;
+-		public int index;
++		public int index = -1;
+ 		public string[] names;
+ 		public int[][] values;
+ 
+--- a/src/TransformConstraint.cs
++++ b/src/TransformConstraint.cs
+@@ -245,7 +245,11 @@
+ 				Bone bone = bones[i];
+ 
+ 				float rotation = bone.arotation;
+-				if (mixRotate != 0) rotation += (target.arotation - rotation + data.offsetRotation) * mixRotate;
++				if (mixRotate != 0 && SpcEditor.Old("local_wrap_42")) {
++					float r = target.arotation - rotation + data.offsetRotation;
++					r -= (float)Math.Ceiling(r / 360 - 0.5f) * 360;
++					rotation += r * mixRotate;
++				} else if (mixRotate != 0) rotation += (target.arotation - rotation + data.offsetRotation) * mixRotate;
+ 
+ 				float x = bone.ax, y = bone.ay;
+ 				x += (target.ax - x + data.offsetX) * mixX;
+@@ -258,7 +262,11 @@
+ 					scaleY = (scaleY + (target.ascaleY - scaleY + data.offsetScaleY) * mixScaleY) / scaleY;
+ 
+ 				float shearY = bone.ashearY;
+-				if (mixShearY != 0) shearY += (target.ashearY - shearY + data.offsetShearY) * mixShearY;
++				if (mixShearY != 0 && SpcEditor.Old("local_wrap_42")) {
++					float r = target.ashearY - shearY + data.offsetShearY;
++					r -= (float)Math.Ceiling(r / 360 - 0.5f) * 360;
++					shearY += r * mixShearY;
++				} else if (mixShearY != 0) shearY += (target.ashearY - shearY + data.offsetShearY) * mixShearY;
+ 
+ 				bone.UpdateWorldTransform(x, y, rotation, scaleX, scaleY, bone.ashearX, shearY);
+ 			}

@@ -1,0 +1,37 @@
+{
+"skeleton": { "spine": "4.3.20" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "b", "parent": "root" },
+	{ "name": "c", "parent": "root", "x": 60 }
+],
+"slots": [
+	{ "name": "s", "bone": "b", "attachment": "m" },
+	{ "name": "l", "bone": "c", "attachment": "m" }
+],
+"constraints": [
+	{ "name": "k", "type": "slider", "animation": "deform", "time": 0.5 }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"s": {
+				"m": { "type": "mesh", "uvs": [ 0, 0, 1, 0, 1, 1, 0, 1 ], "triangles": [ 0, 1, 2, 2, 3, 0 ], "vertices": [ -10, -10, 10, -10, 10, 10, -10, 10 ], "hull": 4, "width": 20, "height": 20 }
+			},
+			"l": {
+				"m": { "type": "linkedmesh", "source": "m", "slot": "s", "width": 20, "height": 20 }
+			}
+		}
+	}
+],
+"animations": {
+	"deform": {
+		"attachments": {
+			"default": {
+				"s": { "m": { "deform": [ {}, { "time": 1, "vertices": [ 5, 0, 5, 0, 5, 0, 5, 0 ] } ] } }
+			}
+		}
+	}
+}
+}

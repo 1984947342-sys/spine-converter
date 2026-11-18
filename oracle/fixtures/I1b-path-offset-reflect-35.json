@@ -1,0 +1,23 @@
+{
+"skeleton": { "spine": "3.5.03-beta", "width": 0, "height": 0 },
+"bones": [
+	{ "name": "root" },
+	{ "name": "flip", "parent": "root", "scaleX": -1 },
+	{ "name": "bone", "parent": "root", "x": -40, "length": 50 }
+],
+"slots": [
+	{ "name": "path", "bone": "flip", "attachment": "path" },
+	{ "name": "s", "bone": "bone" }
+],
+"path": [ { "name": "offset", "bones": [ "bone" ], "target": "path", "rotation": 30, "position": 0.5, "translateMix": 0 } ],
+"skins": {
+	"default": {
+		"path": {
+			"path": { "type": "path", "lengths": [ 60, 120 ], "vertexCount": 6, "vertices": [ -20, -40, 0, 0, 20, 40, 60, 40, 80, 0, 100, -40 ] }
+		}
+	}
+},
+"animations": {
+	"a": { "bones": { "flip": { "rotate": [ { "time": 0, "angle": 0 }, { "time": 1, "angle": 60 } ] } } }
+}
+}

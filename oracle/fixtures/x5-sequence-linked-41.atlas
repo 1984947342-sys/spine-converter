@@ -1,0 +1,12 @@
+x5-sequence-linked-41.png
+	size: 64, 64
+m1
+	bounds: 0, 0, 10, 10
+m2
+	bounds: 10, 0, 12, 12
+m3
+	bounds: 22, 0, 14, 14
+l1
+	bounds: 0, 20, 10, 10
+l2
+	bounds: 10, 20, 20, 20

@@ -1,0 +1,34 @@
+{
+"skeleton": { "spine": "4.0.31-beta" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "a", "parent": "root" },
+	{ "name": "b", "parent": "root", "length": 20 },
+	{ "name": "c", "parent": "root", "length": 20 }
+],
+"slots": [
+	{ "name": "p", "bone": "root", "attachment": "p" }
+],
+"path": [
+	{ "name": "line", "bones": [ "a", "b", "c" ], "target": "p", "spacing": 10 }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"p": {
+				"p": { "type": "path", "lengths": [ 100, 200 ], "vertexCount": 6, "vertices": [ -10, 0, 0, 0, 50, 0, 100, 0, 150, 0, 200, 0 ] }
+			}
+		}
+	}
+],
+"animations": {
+	"slide": {
+		"path": {
+			"line": {
+				"position": [ { "value": 0 }, { "time": 1, "value": 0.3 } ]
+			}
+		}
+	}
+}
+}

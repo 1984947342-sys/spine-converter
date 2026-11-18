@@ -1,0 +1,104 @@
+--- a/src/spine/Json.cpp
++++ b/src/spine/Json.cpp
+@@ -90,6 +90,8 @@
+ 		if (value->_valueString) return strcmp(value->_valueString, "true") == 0;
+ 		if (value->_type == JSON_NULL) return false;
+ 		if (value->_type == JSON_NUMBER) return value->_valueFloat != 0;
++		if (value->_type == JSON_FALSE) return false;
++		if (value->_type == JSON_TRUE) return true;
+ 		return defaultValue;
+ 	} else {
+ 		return defaultValue;
+--- a/src/spine/SkeletonJson.cpp
++++ b/src/spine/SkeletonJson.cpp
+@@ -472,7 +472,8 @@
+ 				skeletonData->_defaultSkin = skin;
+ 			}
+ 
+-			for (attachmentsMap = Json::getItem(skinMap, "attachments")->_child; attachmentsMap; attachmentsMap = attachmentsMap->_next) {
++			Json *attachments = Json::getItem(skinMap, "attachments");
++			for (attachmentsMap = attachments ? attachments->_child : NULL; attachmentsMap; attachmentsMap = attachmentsMap->_next) {
+ 				SlotData* slot = skeletonData->findSlot(attachmentsMap->_name);
+ 				Json *attachmentMap;
+ 
+--- a/src/spine/Atlas.cpp
++++ b/src/spine/Atlas.cpp
+@@ -103,7 +103,7 @@
+ }
+ 
+ void Atlas::load(const char *begin, int length, const char *dir, bool createTexture) {
+-	static const char *formatNames[] = {"", "Alpha", "Intensity", "LuminanceAlpha", "RGB565", "RGBA4444", "RGB888", "RGBA8888"};
++	static const char *formatNames[] = {"Alpha", "Intensity", "LuminanceAlpha", "RGB565", "RGBA4444", "RGB888", "RGBA8888"};
+ 	static const char *textureFilterNames[] = {"", "Nearest", "Linear", "MipMap", "MipMapNearestNearest", "MipMapLinearNearest",
+ 		"MipMapNearestLinear", "MipMapLinearLinear"};
+ 
+@@ -136,7 +136,7 @@
+ 			page->height = toInt(tuple + 1);
+ 			readTuple(&begin, end, tuple);
+ 
+-			page->format = (Format) indexOf(formatNames, 8, tuple);
++			page->format = (Format) indexOf(formatNames, 7, tuple);
+ 
+ 			readTuple(&begin, end, tuple);
+ 			page->minFilter = (TextureFilter) indexOf(textureFilterNames, 8, tuple);
+--- a/src/spine/SkeletonBinary.cpp
++++ b/src/spine/SkeletonBinary.cpp
+@@ -185,10 +185,10 @@
+ 		SlotData *slotData = new(__FILE__, __LINE__) SlotData(i, String(slotName, true), *boneData);
+ 
+ 		readColor(input, slotData->getColor());
++		unsigned char a = readByte(input);
+ 		unsigned char r = readByte(input);
+ 		unsigned char g = readByte(input);
+ 		unsigned char b = readByte(input);
+-		unsigned char a = readByte(input);
+ 		if (!(r == 0xff && g == 0xff && b == 0xff && a == 0xff)) {
+ 			slotData->getDarkColor().set(r / 255.0f, g / 255.0f, b / 255.0f, 1);
+ 			slotData->setHasDarkColor(true);
+--- a/src/spine/TransformConstraint.cpp
++++ b/src/spine/TransformConstraint.cpp
+@@ -175,12 +175,12 @@
+ 		if (scaleMix > 0) {
+ 			float s = MathUtil::sqrt(bone._a * bone._a + bone._c * bone._c);
+ 
+-			if (s > 0.00001f) s = (s + (MathUtil::sqrt(ta * ta + tc * tc) - s + _data._offsetScaleX) * scaleMix) / s;
++			if (s != 0) s = (s + (MathUtil::sqrt(ta * ta + tc * tc) - s + _data._offsetScaleX) * scaleMix) / s;
+ 			bone._a *= s;
+ 			bone._c *= s;
+ 			s = MathUtil::sqrt(bone._b * bone._b + bone._d * bone._d);
+ 
+-			if (s > 0.00001f) s = (s + (MathUtil::sqrt(tb * tb + td * td) - s + _data._offsetScaleY) * scaleMix) / s;
++			if (s != 0) s = (s + (MathUtil::sqrt(tb * tb + td * td) - s + _data._offsetScaleY) * scaleMix) / s;
+ 			bone._b *= s;
+ 			bone._d *= s;
+ 			modified = true;
+@@ -298,15 +298,15 @@
+ 
+ 		float scaleX = bone._ascaleX, scaleY = bone._ascaleY;
+ 		if (scaleMix != 0) {
+-			if (scaleX > 0.00001f) scaleX = (scaleX + (target._ascaleX - scaleX + _data._offsetScaleX) * scaleMix) / scaleX;
+-			if (scaleY > 0.00001f) scaleY = (scaleY + (target._ascaleY - scaleY + _data._offsetScaleY) * scaleMix) / scaleY;
++			if (scaleX != 0) scaleX = (scaleX + (target._ascaleX - scaleX + _data._offsetScaleX) * scaleMix) / scaleX;
++			if (scaleY != 0) scaleY = (scaleY + (target._ascaleY - scaleY + _data._offsetScaleY) * scaleMix) / scaleY;
+ 		}
+ 
+ 		float shearY = bone._ashearY;
+ 		if (shearMix != 0) {
+ 			float r = target._ashearY - shearY + _data._offsetShearY;
+ 			r -= (16384 - (int) (16384.499999999996 - r / 360)) * 360;
+-			bone._shearY += r * shearMix;
++			shearY += r * shearMix;
+ 		}
+ 
+ 		bone.updateWorldTransform(x, y, rotation, scaleX, scaleY, bone._ashearX, shearY);
+@@ -335,8 +335,8 @@
+ 
+ 		float scaleX = bone._ascaleX, scaleY = bone._ascaleY;
+ 		if (scaleMix != 0) {
+-			if (scaleX > 0.00001f) scaleX *= ((target._ascaleX - 1 + _data._offsetScaleX) * scaleMix) + 1;
+-			if (scaleY > 0.00001f) scaleY *= ((target._ascaleY - 1 + _data._offsetScaleY) * scaleMix) + 1;
++			if (scaleX != 0) scaleX *= ((target._ascaleX - 1 + _data._offsetScaleX) * scaleMix) + 1;
++			if (scaleY != 0) scaleY *= ((target._ascaleY - 1 + _data._offsetScaleY) * scaleMix) + 1;
+ 		}
+ 
+ 		float shearY = bone._ashearY;

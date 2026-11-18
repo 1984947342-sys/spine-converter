@@ -1,0 +1,21 @@
+{
+"skeleton": { "spine": "4.1.17" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "hip", "parent": "root", "x": 10 },
+	{ "name": "leg", "parent": "hip", "length": 40 },
+	{ "name": "t", "parent": "root", "x": 30, "y": 30 }
+],
+"ik": [
+	{ "name": "aim", "bones": [ "leg" ], "target": "t" }
+],
+"animations": {
+	"flip": {
+		"bones": {
+			"hip": {
+				"scale": [ { "x": 0.00005 }, { "time": 1, "x": -0.00005 } ]
+			}
+		}
+	}
+}
+}

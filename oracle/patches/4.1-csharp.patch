@@ -1,0 +1,72 @@
+--- a/src/Animation.cs
++++ b/src/Animation.cs
+@@ -2642,7 +2642,7 @@
+ 				if ((vertexAttachment == null)
+ 					|| vertexAttachment.TimelineAttachment != attachment) return;
+ 			}
+-			Sequence sequence = ((IHasTextureRegion)slotAttachment).Sequence;
++			Sequence sequence = SpcEditor.Old("sequence_linked_41") ? attachment.Sequence : ((IHasTextureRegion)slotAttachment).Sequence;
+ 			if (sequence == null) return;
+ 
+ 			float[] frames = this.frames;
+@@ -2680,6 +2680,7 @@
+ 					index = count - 1 - (index % count);
+ 					break;
+ 				case SequenceMode.PingpongReverse: {
++					if (SpcEditor.Old("sequence_mode_41")) break;
+ 					int n = (count << 1) - 2;
+ 					index = n == 0 ? 0 : (index + count - 1) % n;
+ 					if (index >= count) index = n - index;
+--- a/src/Atlas.cs
++++ b/src/Atlas.cs
+@@ -353,7 +353,7 @@
+ 		public int packedHeight { get { return height; } set { height = value; } }
+ 		public int degrees;
+ 		public bool rotate;
+-		public int index;
++		public int index = -1;
+ 		public string[] names;
+ 		public int[][] values;
+ 
+--- a/src/IkConstraint.cs
++++ b/src/IkConstraint.cs
+@@ -172,7 +172,7 @@
+ 				ty = (targetY - bone.worldY) * Math.Sign(bone.skeleton.ScaleY);
+ 				break;
+ 			case TransformMode.NoRotationOrReflection: {
+-				float s = Math.Abs(pa * pd - pb * pc) / Math.Max(0.0001f, pa * pa + pc * pc);
++				float s = Math.Abs(pa * pd - pb * pc) / (SpcEditor.Old("ik_singular_41") ? pa * pa + pc * pc : Math.Max(0.0001f, pa * pa + pc * pc));
+ 				float sa = pa / bone.skeleton.ScaleX;
+ 				float sc = pc / bone.skeleton.ScaleY;
+ 				pb = -sc * s * bone.skeleton.ScaleX;
+@@ -183,7 +183,7 @@
+ 			default: {
+ 				float x = targetX - p.worldX, y = targetY - p.worldY;
+ 				float d = pa * pd - pb * pc;
+-				if (Math.Abs(d) <= 0.0001f) {
++				if (Math.Abs(d) <= 0.0001f && !SpcEditor.Old("ik_singular_41")) {
+ 					tx = 0;
+ 					ty = 0;
+ 				} else {
+@@ -262,7 +262,10 @@
+ 			c = pp.c;
+ 			d = pp.d;
+ 			float id = a * d - b * c, x = cwx - pp.worldX, y = cwy - pp.worldY;
+-			id = Math.Abs(id) <= 0.0001f ? 0 : 1 / id;
++			if (SpcEditor.Old("ik_singular_41"))
++				id = 1 / id;
++			else
++				id = Math.Abs(id) <= 0.0001f ? 0 : 1 / id;
+ 			float dx = (x * d - y * b) * id - px, dy = (y * a - x * c) * id - py;
+ 			float l1 = (float)Math.Sqrt(dx * dx + dy * dy), l2 = child.data.length * csx, a1, a2;
+ 			if (l1 < 0.0001f) {
+--- a/src/TransformConstraint.cs
++++ b/src/TransformConstraint.cs
+@@ -80,6 +80,7 @@
+ 		}
+ 
+ 		public void Update () {
++			if (SpcEditor.Old("mix_scale_y_41") && mixRotate == 0 && mixX == 0 && mixY == 0 && mixScaleX == 0 && mixShearY == 0) return;
+ 			if (mixRotate == 0 && mixX == 0 && mixY == 0 && mixScaleX == 0 && mixScaleY == 0 && mixShearY == 0) return;
+ 			if (data.local) {
+ 				if (data.relative)

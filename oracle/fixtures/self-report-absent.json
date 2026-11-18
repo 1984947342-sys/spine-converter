@@ -1,0 +1,21 @@
+{
+"skeleton": { "hash": "", "spine": "3.8.99" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "upper", "parent": "root", "length": 100 },
+	{ "name": "lower", "parent": "upper", "length": 100, "x": 100 },
+	{ "name": "target", "parent": "root", "x": 190 }
+],
+"ik": [
+	{ "name": "leg", "bones": [ "upper", "lower" ], "target": "target" }
+],
+"animations": {
+	"reach": {
+		"bones": {
+			"target": {
+				"translate": [ { "x": 0 }, { "time": 1, "x": -60 } ]
+			}
+		}
+	}
+}
+}

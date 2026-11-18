@@ -1,0 +1,28 @@
+{
+"skeleton": { "spine": "4.2.22" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "src", "parent": "root", "x": 80, "scaleX": 1.5, "scaleY": 0.8 },
+	{ "name": "a", "parent": "root", "length": 50, "rotation": 30, "scaleX": -2, "scaleY": 0.7 },
+	{ "name": "a2", "parent": "a", "x": 50, "length": 30 },
+	{ "name": "b", "parent": "root", "x": -40, "length": 40, "scaleX": -1.3, "scaleY": -0.5 },
+	{ "name": "c", "parent": "root", "y": 50, "length": 30, "scaleX": 0.6, "scaleY": -1.7 }
+],
+"transform": [
+	{ "name": "t", "bones": [ "a", "b" ], "target": "src", "local": true, "rotation": 10, "scaleX": 0.3, "scaleY": -0.2,
+	  "mixRotate": 0.5, "mixX": 0, "mixY": 0, "mixScaleX": 0.4, "mixScaleY": 0.6, "mixShearY": 0 },
+	{ "name": "t1", "order": 1, "bones": [ "c" ], "target": "src", "local": true, "mixRotate": 0, "mixX": 0, "mixY": 0, "mixScaleX": 0.7, "mixScaleY": -0.9, "mixShearY": 0 }
+],
+"animations": {
+	"sweep": { "bones": {
+		"a": { "scale": [ { "x": 0.2, "y": 0.5 }, { "time": 2, "x": 1.5, "y": 2.5 } ] },
+		"b": { "scale": [ { "x": 2, "curve": [ 0.3, 0.1, 0.7, 3.2, 0.3, 1, 0.7, 0.2 ] }, { "time": 1, "x": 0.5 } ] },
+		"c": { "scale": [ { "y": 0.4 }, { "time": 1, "y": 2.5 } ] },
+		"src": { "scale": [ { "x": 0.8, "y": 1.2 }, { "time": 2, "x": 1.6, "y": 0.6 } ] }
+	} },
+	"mixes": { "transform": { "t": [
+		{ "mixRotate": 0.2, "mixScaleX": 0.1, "mixScaleY": 0.9 },
+		{ "time": 2, "mixRotate": 0.2, "mixScaleX": 0.8, "mixScaleY": 0.3 }
+	] } }
+}
+}

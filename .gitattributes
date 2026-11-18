@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.patch -text
+LICENSE -text
+*.png binary
+*.skel binary
+*.wasm binary

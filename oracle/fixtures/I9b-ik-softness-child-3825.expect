@@ -1,0 +1,5 @@
+from 3.8.25-beta
+to 3.8
+code ik.softness.approximated
+rewrite yes
+editor ik_solve_3825 ik_world_38

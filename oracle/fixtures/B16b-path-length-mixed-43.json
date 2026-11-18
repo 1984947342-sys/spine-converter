@@ -1,0 +1,30 @@
+{
+"skeleton": { "spine": "4.2.22" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "b1", "parent": "root", "length": 20 },
+	{ "name": "b2", "parent": "b1", "x": 20, "length": 35, "scaleX": 1.5 },
+	{ "name": "b3", "parent": "b2", "x": 20, "length": 20 }
+],
+"slots": [ { "name": "s", "bone": "root", "attachment": "path" } ],
+"path": [
+	{ "name": "p", "bones": [ "b1", "b2", "b3" ], "target": "s", "spacing": -30, "position": 150, "rotateMode": "chainScale" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"s": {
+				"path": { "type": "path", "lengths": [ 110, 220, 330, 440 ], "vertexCount": 12,
+					"vertices": [ -20, -100, 0, -100, 20, -100, 100, -20, 100, 0, 100, 20, 20, 100, 0, 100, -20, 100, -100, 20, -100, 0, -100, -20 ] }
+			}
+		}
+	}
+],
+"animations": {
+	"a": {
+		"bones": { "b1": { "scale": [ { "x": 1 }, { "time": 1, "x": 0.5 } ] } },
+		"path": { "p": { "spacing": [ { "value": -5, "curve": [ 0.3, -60, 0.6, 10 ] }, { "time": 1, "value": -45 } ] } }
+	}
+}
+}

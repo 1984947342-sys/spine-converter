@@ -1,0 +1,23 @@
+{
+"skeleton": { "spine": "3.8.25-beta", "width": 0, "height": 0 },
+"bones": [
+	{ "name": "root" },
+	{ "name": "thigh", "parent": "root", "y": -40, "scaleX": -1, "length": 50 },
+	{ "name": "shin", "parent": "thigh", "x": 50, "scaleX": 1.6, "length": 40 },
+	{ "name": "foot", "parent": "root", "x": -90, "y": -60 }
+],
+"slots": [ { "name": "s", "bone": "shin", "attachment": "p" } ],
+"ik": [
+	{ "name": "soft", "bones": [ "thigh", "shin" ], "target": "foot", "softness": 30 }
+],
+"skins": [ { "name": "default", "attachments": { "s": { "p": { "type": "point", "x": 40, "y": 0 } } } } ],
+"animations": {
+	"a": {
+		"bones": {
+			"foot": { "translate": [ { "x": 0, "y": 0 }, { "time": 1, "x": -40, "y": 30 } ] },
+			"shin": { "scale": [ { "x": -1 }, { "time": 1, "x": -1, "y": 1.4 } ] }
+		},
+		"ik": { "soft": [ { "softness": 30 }, { "time": 1, "softness": 60 } ] }
+	}
+}
+}

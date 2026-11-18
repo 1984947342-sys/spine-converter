@@ -1,0 +1,18 @@
+x5c-sequence-linked-modes-41.png
+	size: 64, 64
+m1
+	bounds: 0, 0, 10, 10
+m2
+	bounds: 10, 0, 12, 12
+m3
+	bounds: 22, 0, 14, 14
+l1
+	bounds: 0, 20, 10, 10
+l2
+	bounds: 10, 20, 12, 12
+l3
+	bounds: 22, 20, 14, 14
+l4
+	bounds: 36, 20, 16, 16
+l5
+	bounds: 0, 40, 18, 18

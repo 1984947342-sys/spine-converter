@@ -1,0 +1,5 @@
+from 4.2
+to 4.3
+code transform.localWrap.approximated
+editor local_wrap_42
+rewrite yes

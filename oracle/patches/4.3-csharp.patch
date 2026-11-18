@@ -1,0 +1,348 @@
+--- a/src/Atlas.cs
++++ b/src/Atlas.cs
+@@ -353,7 +353,7 @@
+ 		public int packedHeight { get { return height; } set { height = value; } }
+ 		public int degrees;
+ 		public bool rotate;
+-		public int index;
++		public int index = -1;
+ 		public string[] names;
+ 		public int[][] values;
+ 
+--- a/src/BonePose.cs
++++ b/src/BonePose.cs
+@@ -140,6 +140,11 @@
+ 			worldX = pa * x + pb * y + parent.worldX;
+ 			worldY = pc * x + pd * y + parent.worldY;
+ 
++			if (inherit != Inherit.Normal && SpcEditor.Old("derive_43")) {
++				UpdateWorldTransformOld(skeleton, pa, pb, pc, pd);
++				return;
++			}
++
+ 			switch (inherit) {
+ 			case Inherit.Normal: {
+ 				float rx = (rotation + shearX) * MathUtils.DegRad;
+@@ -169,7 +174,7 @@
+ 				pa *= sxi;
+ 				pc *= syi;
+ 				float s = pa * pa + pc * pc, r;
+-				if (s > MathUtils.EpsilonSq) {
++				if (s > (SpcEditor.Old("singular_43") ? MathUtils.Epsilon : MathUtils.EpsilonSq)) {
+ 					s = Math.Abs(pa * pd * syi - pb * sxi * pc) / s;
+ 					pb = pc * s;
+ 					pd = pa * s;
+@@ -230,6 +235,11 @@
+ 			local = 0;
+ 			world = skeleton.update;
+ 
++			if (SpcEditor.Old("derive_43")) {
++				UpdateLocalTransformOld(skeleton);
++				return;
++			}
++
+ 			float sx = skeleton.scaleX, sy = skeleton.ScaleY;
+ 			if (bone.parent == null) {
+ 				float sxi = 1 / sx, syi = 1 / sy;
+@@ -292,6 +302,158 @@
+ 			}
+ 		}
+ 
++		private void UpdateWorldTransformOld (Skeleton skeleton, float pa, float pb, float pc, float pd) {
++			switch (inherit) {
++			case Inherit.OnlyTranslation: {
++				float rx = (rotation + shearX) * MathUtils.DegRad;
++				float ry = (rotation + 90 + shearY) * MathUtils.DegRad;
++				a = (float)Math.Cos(rx) * scaleX;
++				b = (float)Math.Cos(ry) * scaleY;
++				c = (float)Math.Sin(rx) * scaleX;
++				d = (float)Math.Sin(ry) * scaleY;
++				break;
++			}
++			case Inherit.NoRotationOrReflection: {
++				float sx = 1 / skeleton.scaleX, sy = 1 / skeleton.ScaleY;
++				pa *= sx;
++				pc *= sy;
++				float s = pa * pa + pc * pc, prx;
++				if (s > 0.0001f) {
++					s = Math.Abs(pa * pd * sy - pb * sx * pc) / s;
++					pb = pc * s;
++					pd = pa * s;
++					prx = MathUtils.Atan2Deg(pc, pa);
++				} else {
++					pa = 0;
++					pc = 0;
++					prx = 90 - MathUtils.Atan2Deg(pd, pb);
++				}
++				float rx = (rotation + shearX - prx) * MathUtils.DegRad;
++				float ry = (rotation + shearY - prx + 90) * MathUtils.DegRad;
++				float la = (float)Math.Cos(rx) * scaleX;
++				float lb = (float)Math.Cos(ry) * scaleY;
++				float lc = (float)Math.Sin(rx) * scaleX;
++				float ld = (float)Math.Sin(ry) * scaleY;
++				a = pa * la - pb * lc;
++				b = pa * lb - pb * ld;
++				c = pc * la + pd * lc;
++				d = pc * lb + pd * ld;
++				break;
++			}
++			case Inherit.NoScale:
++			case Inherit.NoScaleOrReflection: {
++				float r = rotation * MathUtils.DegRad, cos = (float)Math.Cos(r), sin = (float)Math.Sin(r);
++				float za = (pa * cos + pb * sin) / skeleton.scaleX;
++				float zc = (pc * cos + pd * sin) / skeleton.ScaleY;
++				float s = (float)Math.Sqrt(za * za + zc * zc);
++				if (s > 0.00001f) s = 1 / s;
++				za *= s;
++				zc *= s;
++				s = (float)Math.Sqrt(za * za + zc * zc);
++				if (inherit == Inherit.NoScale && (pa * pd - pb * pc < 0) != (skeleton.scaleX < 0 != skeleton.ScaleY < 0)) s = -s;
++				r = MathUtils.PI / 2 + MathUtils.Atan2(zc, za);
++				float zb = (float)Math.Cos(r) * s;
++				float zd = (float)Math.Sin(r) * s;
++				float rx = shearX * MathUtils.DegRad;
++				float ry = (90 + shearY) * MathUtils.DegRad;
++				float la = (float)Math.Cos(rx) * scaleX;
++				float lb = (float)Math.Cos(ry) * scaleY;
++				float lc = (float)Math.Sin(rx) * scaleX;
++				float ld = (float)Math.Sin(ry) * scaleY;
++				a = za * la + zb * lc;
++				b = za * lb + zb * ld;
++				c = zc * la + zd * lc;
++				d = zc * lb + zd * ld;
++				break;
++			}
++			}
++			a *= skeleton.scaleX;
++			b *= skeleton.scaleX;
++			c *= skeleton.ScaleY;
++			d *= skeleton.ScaleY;
++		}
++
++		private void UpdateLocalTransformOld (Skeleton skeleton) {
++			if (bone.parent == null) {
++				x = worldX - skeleton.x;
++				y = worldY - skeleton.y;
++				float a = this.a, b = this.b, c = this.c, d = this.d;
++				rotation = MathUtils.Atan2Deg(c, a);
++				scaleX = (float)Math.Sqrt(a * a + c * c);
++				scaleY = (float)Math.Sqrt(b * b + d * d);
++				shearX = 0;
++				shearY = MathUtils.Atan2Deg(a * b + c * d, a * d - b * c);
++				return;
++			}
++
++			BonePose parent = bone.parent.appliedPose;
++			float pa = parent.a, pb = parent.b, pc = parent.c, pd = parent.d;
++			float pid = 1 / (pa * pd - pb * pc);
++			float ia = pd * pid, ib = pb * pid, ic = pc * pid, id = pa * pid;
++			float dx = worldX - parent.worldX, dy = worldY - parent.worldY;
++			x = (dx * ia - dy * ib);
++			y = (dy * id - dx * ic);
++
++			float ra, rb, rc, rd;
++			if (inherit == Inherit.OnlyTranslation) {
++				ra = a;
++				rb = b;
++				rc = c;
++				rd = d;
++			} else {
++				switch (inherit) {
++				case Inherit.NoRotationOrReflection: {
++					float s = Math.Abs(pa * pd - pb * pc) / (pa * pa + pc * pc);
++					pb = -pc * skeleton.scaleX * s / skeleton.ScaleY;
++					pd = pa * skeleton.ScaleY * s / skeleton.scaleX;
++					pid = 1 / (pa * pd - pb * pc);
++					ia = pd * pid;
++					ib = pb * pid;
++					break;
++				}
++				case Inherit.NoScale:
++				case Inherit.NoScaleOrReflection: {
++					float r = rotation * MathUtils.DegRad, cos = (float)Math.Cos(r), sin = (float)Math.Sin(r);
++					pa = (pa * cos + pb * sin) / skeleton.scaleX;
++					pc = (pc * cos + pd * sin) / skeleton.ScaleY;
++					float s = (float)Math.Sqrt(pa * pa + pc * pc);
++					if (s > 0.00001f) s = 1 / s;
++					pa *= s;
++					pc *= s;
++					s = (float)Math.Sqrt(pa * pa + pc * pc);
++					if (inherit == Inherit.NoScale && pid < 0 != (skeleton.scaleX < 0 != skeleton.ScaleY < 0)) s = -s;
++					r = MathUtils.PI / 2 + MathUtils.Atan2(pc, pa);
++					pb = (float)Math.Cos(r) * s;
++					pd = (float)Math.Sin(r) * s;
++					pid = 1 / (pa * pd - pb * pc);
++					ia = pd * pid;
++					ib = pb * pid;
++					ic = pc * pid;
++					id = pa * pid;
++					break;
++				}
++				}
++				ra = ia * a - ib * c;
++				rb = ia * b - ib * d;
++				rc = id * c - ic * a;
++				rd = id * d - ic * b;
++			}
++
++			shearX = 0;
++			scaleX = (float)Math.Sqrt(ra * ra + rc * rc);
++			if (scaleX > 0.0001f) {
++				float det = ra * rd - rb * rc;
++				scaleY = det / scaleX;
++				shearY = -MathUtils.Atan2Deg(ra * rb + rc * rd, det);
++				rotation = MathUtils.Atan2Deg(rc, ra);
++			} else {
++				scaleX = 0;
++				scaleY = (float)Math.Sqrt(rb * rb + rd * rd);
++				shearY = 0;
++				rotation = 90 - MathUtils.Atan2Deg(rd, rb);
++			}
++		}
++
+ 		private void Set (float ra, float rb, float rc, float rd) {
+ 			float x = ra * ra + rc * rc, y = rb * rb + rd * rd;
+ 			if (x > MathUtils.EpsilonSq) {
+@@ -373,7 +535,9 @@
+ 			for (int i = 0, n = bone.children.Count; i < n; i++) {
+ 				BonePose child = children[i].appliedPose;
+ 				if (child.world == update) {
+-					if (child.local == update) child.UpdateLocalTransform(skeleton);
++					if (SpcEditor.Old("reset_43"))
++						child.local = 0;
++					else if (child.local == update) child.UpdateLocalTransform(skeleton);
+ 					child.world = 0;
+ 					child.ResetWorld(skeleton, update);
+ 				}
+--- a/src/IkConstraint.cs
++++ b/src/IkConstraint.cs
+@@ -105,6 +105,8 @@
+ 			if (bone == null) throw new ArgumentNullException("bone", "bone cannot be null.");
+ 			bone.ModifyLocal(skeleton);
+ 			BonePose p = bone.bone.parent.appliedPose;
++			bool derive = SpcEditor.Old("derive_43");
++			float epsilon = derive ? 0.0001f : MathUtils.Epsilon;
+ 
+ 			float pa = p.a, pb = p.b, pc = p.c, pd = p.d;
+ 			float rotationIK = -bone.shearX - bone.rotation, tx, ty;
+@@ -114,7 +116,7 @@
+ 				ty = (targetY - bone.worldY) * Math.Sign(skeleton.ScaleY);
+ 				break;
+ 			case Inherit.NoRotationOrReflection: {
+-				float s = Math.Abs(pa * pd - pb * pc) / Math.Max(MathUtils.Epsilon, pa * pa + pc * pc);
++				float s = Math.Abs(pa * pd - pb * pc) / Math.Max(epsilon, pa * pa + pc * pc);
+ 				float sa = pa / skeleton.scaleX;
+ 				float sc = pc / skeleton.ScaleY;
+ 				pb = -sc * s * skeleton.scaleX;
+@@ -125,7 +127,7 @@
+ 			default: {
+ 				float x = targetX - p.worldX, y = targetY - p.worldY;
+ 				float d = pa * pd - pb * pc;
+-				if (Math.Abs(d) <= MathUtils.Epsilon) {
++				if (Math.Abs(d) <= epsilon) {
+ 					tx = 0;
+ 					ty = 0;
+ 				} else {
+@@ -140,7 +142,7 @@
+ 			if (bone.scaleX < 0) rotationIK += 180;
+ 			if (rotationIK > 180)
+ 				rotationIK -= 360;
+-			else if (rotationIK <= -180) //
++			else if (derive ? rotationIK < -180 : rotationIK <= -180) //
+ 				rotationIK += 360;
+ 			bone.rotation += rotationIK * mix;
+ 			if (compress || stretch) {
+@@ -152,7 +154,7 @@
+ 					break;
+ 				}
+ 				float b = bone.bone.data.length * bone.scaleX;
+-				if (b > MathUtils.Epsilon) {
++				if (b > epsilon) {
+ 					float dd = tx * tx + ty * ty;
+ 					if ((compress && dd < b * b) || (stretch && dd > b * b)) {
+ 						float s = ((float)Math.Sqrt(dd) / b - 1) * mix + 1;
+@@ -162,7 +164,7 @@
+ 							bone.scaleY *= s;
+ 							break;
+ 						case ScaleYMode.Volume:
+-							bone.scaleY /= s < 0.7f ? 0.25f + 0.642857f * s : s;
++							bone.scaleY /= !SpcEditor.Old("volume_43") && s < 0.7f ? 0.25f + 0.642857f * s : s;
+ 							break;
+ 						}
+ 					}
+@@ -179,6 +181,8 @@
+ 			if (parent.inherit != Inherit.Normal || child.inherit != Inherit.Normal) return;
+ 			parent.ModifyLocal(skeleton);
+ 			child.ModifyLocal(skeleton);
++			bool derive = SpcEditor.Old("derive_43");
++			float epsilon = derive ? 0.0001f : MathUtils.Epsilon;
+ 			float px = parent.x, py = parent.y, psx = parent.scaleX, psy = parent.scaleY, csx = child.scaleX;
+ 			int os1, os2, s2;
+ 			if (psx < 0) {
+@@ -199,7 +203,7 @@
+ 			} else
+ 				os2 = 0;
+ 			float cwx, cwy, a = parent.a, b = parent.b, c = parent.c, d = parent.d;
+-			bool u = Math.Abs(psx - psy) <= MathUtils.Epsilon;
++			bool u = Math.Abs(psx - psy) <= epsilon;
+ 			if (!u || stretch) {
+ 				child.y = 0;
+ 				cwx = a * child.x + parent.worldX;
+@@ -214,10 +218,10 @@
+ 			c = pp.c;
+ 			d = pp.d;
+ 			float id = a * d - b * c, x = cwx - pp.worldX, y = cwy - pp.worldY;
+-			id = Math.Abs(id) <= MathUtils.Epsilon ? 0 : 1 / id;
++			id = Math.Abs(id) <= epsilon ? 0 : 1 / id;
+ 			float dx = (x * d - y * b) * id - px, dy = (y * a - x * c) * id - py;
+ 			float l1 = (float)Math.Sqrt(dx * dx + dy * dy), l2 = child.bone.data.length * csx, a1, a2;
+-			if (l1 < MathUtils.Epsilon) {
++			if (l1 < epsilon) {
+ 				Apply(skeleton, parent, targetX, targetY, false, stretch, ScaleYMode.None, mix);
+ 				child.rotation = 0;
+ 				return;
+@@ -254,7 +258,7 @@
+ 							parent.scaleY *= a;
+ 							break;
+ 						case ScaleYMode.Volume:
+-							parent.scaleY /= a < 0.7f ? 0.25f + 0.642857f * a : a;
++							parent.scaleY /= !SpcEditor.Old("volume_43") && a < 0.7f ? 0.25f + 0.642857f * a : a;
+ 							break;
+ 						}
+ 					}
+@@ -318,13 +322,13 @@
+ 			a1 = (a1 - os) * MathUtils.RadDeg + os1 - parent.rotation;
+ 			if (a1 > 180)
+ 				a1 -= 360;
+-			else if (a1 <= -180)
++			else if (derive ? a1 < -180 : a1 <= -180)
+ 				a1 += 360;
+ 			parent.rotation += a1 * mix;
+ 			a2 = ((a2 + os) * MathUtils.RadDeg - child.shearX) * s2 + os2 - child.rotation;
+ 			if (a2 > 180)
+ 				a2 -= 360;
+-			else if (a2 <= -180)
++			else if (derive ? a2 < -180 : a2 <= -180)
+ 				a2 += 360;
+ 			child.rotation += a2 * mix;
+ 		}
+--- a/src/Slider.cs
++++ b/src/Slider.cs
+@@ -95,6 +95,17 @@
+ 				} else if (t is ISlotTimeline) {
+ 					ISlotTimeline timeline = (ISlotTimeline)t;
+ 					skeleton.Constrained(slots[timeline.SlotIndex]);
++					if (!SpcEditor.Old("slider_linked_43")) {
++						int[] timelineSlots = null;
++						if (t is DeformTimeline)
++							timelineSlots = ((DeformTimeline)t).Attachment.TimelineSlots;
++						else if (t is SequenceTimeline)
++							timelineSlots = ((SequenceTimeline)t).Attachment.TimelineSlots;
++						if (timelineSlots != null) {
++							foreach (int slotIndex in timelineSlots)
++								skeleton.Constrained(slots[slotIndex]);
++						}
++					}
+ 				} else if (t is DrawOrderTimeline || t is DrawOrderFolderTimeline) {
+ 					skeleton.drawOrder.Constrained();
+ 				} else if (t is PhysicsConstraintTimeline) {

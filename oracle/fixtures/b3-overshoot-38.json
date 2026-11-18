@@ -1,0 +1,21 @@
+{
+"skeleton": { "spine": "3.8.99" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "b", "parent": "root", "x": 30, "length": 40 },
+	{ "name": "t", "parent": "root", "x": 80, "scaleX": 2, "scaleY": 0.5 }
+],
+"transform": [
+	{ "name": "grow", "bones": [ "b" ], "target": "t", "rotateMix": 0, "translateMix": 0, "scaleMix": 0.5, "shearMix": 0 }
+],
+"animations": {
+	"dip": {
+		"transform": {
+			"grow": [
+				{ "rotateMix": 0, "translateMix": 0, "scaleMix": 0.1, "shearMix": 0, "curve": 0.25, "c2": -3, "c3": 0.75, "c4": -3 },
+				{ "time": 1, "rotateMix": 0, "translateMix": 0, "scaleMix": 0.5, "shearMix": 0 }
+			]
+		}
+	}
+}
+}

@@ -1,0 +1,32 @@
+{
+"skeleton": { "spine": "3.8.99" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "hip", "parent": "root", "rotation": 20 },
+	{ "name": "upper", "parent": "hip", "x": 10, "y": 5, "rotation": -30, "length": 50, "scaleX": 1.2, "scaleY": 1.2 },
+	{ "name": "lower", "parent": "upper", "x": 45, "y": 12, "rotation": 15, "length": 40, "scaleX": 0.9, "shearX": 6 },
+	{ "name": "foot", "parent": "lower", "x": 40, "rotation": 30, "length": 15 },
+	{ "name": "t", "parent": "root", "x": 80, "y": 30 },
+	{ "name": "upper2", "parent": "root", "y": -100, "scaleX": -1, "scaleY": 1, "length": 50 },
+	{ "name": "lower2", "parent": "upper2", "x": 50, "y": -8, "length": 50 },
+	{ "name": "t2", "parent": "root", "x": -120, "y": -70 }
+],
+"ik": [
+	{ "name": "leg", "bones": [ "upper", "lower" ], "target": "t", "stretch": true, "softness": 6, "mix": 0.7 },
+	{ "name": "arm", "order": 1, "bones": [ "upper2", "lower2" ], "target": "t2", "stretch": true, "bendPositive": false }
+],
+"animations": {
+	"reach": {
+		"bones": {
+			"t": { "translate": [ { "x": -40, "y": -20, "curve": 0.3, "c2": 0.1, "c3": 0.6 }, { "time": 0.5, "x": 60, "y": 10 }, { "time": 1, "x": 120, "y": 60 } ] },
+			"t2": { "translate": [ { "x": 0, "y": 0 }, { "time": 1, "x": -60, "y": -30 } ] },
+			"upper": {
+				"rotate": [ { "angle": 0 }, { "time": 1, "angle": 40 } ],
+				"translate": [ { "x": 0, "y": 0 }, { "time": 1, "x": 5, "y": -3 } ]
+			},
+			"lower": { "rotate": [ { "angle": 0 }, { "time": 1, "angle": -170 } ], "scale": [ { "x": 1 }, { "time": 1, "x": 1.3, "y": 0.8 } ] }
+		},
+		"ik": { "leg": [ { "mix": 0.7 }, { "time": 0.5, "mix": 1 }, { "time": 1, "mix": 0.4, "softness": 0 } ] }
+	}
+}
+}

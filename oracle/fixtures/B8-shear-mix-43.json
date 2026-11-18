@@ -1,0 +1,16 @@
+{
+"skeleton": { "spine": "4.2.22" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "s", "parent": "root", "x": 30, "shearY": 40 },
+	{ "name": "b", "parent": "root", "x": -30, "length": 40, "shearY": -20 }
+],
+"transform": [
+	{ "name": "t", "bones": [ "b" ], "target": "s", "mixRotate": 0, "mixX": 0, "mixScaleX": 0, "mixShearY": -0.5 }
+],
+"animations": {
+	"a": {
+		"transform": { "t": [ { "mixRotate": 0, "mixX": 0, "mixScaleX": 0, "mixShearY": -1, "curve": [ 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.5, 0.7, -0.2 ] }, { "time": 1, "mixRotate": 0, "mixX": 0, "mixScaleX": 0, "mixShearY": 0 } ] }
+	}
+}
+}

@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Output mirrors oracle/dump.cpp -->
+  <PropertyGroup>
+    <SpineVersion>3.7</SpineVersion>
+    <DefineConstants>$(DefineConstants);V36;V37</DefineConstants>
+  </PropertyGroup>
+  <Import Project="..\Dump.props" />
+</Project>

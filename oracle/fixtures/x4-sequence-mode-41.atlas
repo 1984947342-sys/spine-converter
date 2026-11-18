@@ -1,0 +1,10 @@
+x4-sequence-mode-41.png
+	size: 64, 64
+frame1
+	bounds: 0, 0, 10, 10
+frame2
+	bounds: 10, 0, 10, 10
+	offsets: 4, 4, 18, 18
+frame3
+	bounds: 20, 0, 10, 10
+	offsets: 8, 0, 18, 10

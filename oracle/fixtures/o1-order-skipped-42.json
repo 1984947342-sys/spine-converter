@@ -1,0 +1,24 @@
+{
+"skeleton": { "spine": "4.2.40", "width": 0, "height": 0 },
+"bones": [
+	{ "name": "root" },
+	{ "name": "a", "parent": "root", "x": 10, "length": 30 },
+	{ "name": "t", "parent": "root", "x": 50, "y": 20, "rotation": 30 }
+],
+"slots": [ { "name": "s", "bone": "a", "attachment": "p" } ],
+"ik": [ { "name": "aim", "order": 1, "bones": [ "a" ], "target": "t" } ],
+"transform": [
+	{ "name": "one", "bones": [ "a" ], "target": "t", "mixRotate": 0, "mixX": 0.5, "mixY": 0, "mixScaleX": 0, "mixShearY": 0 },
+	{ "name": "two", "bones": [ "a" ], "target": "t", "mixRotate": 0, "mixX": 0, "mixY": 1, "mixScaleX": 0, "mixShearY": 0, "y": 15 },
+	{ "name": "far", "order": 7, "bones": [ "a" ], "target": "t", "mixRotate": 0, "mixX": 1, "mixY": 0, "mixScaleX": 0, "mixShearY": 0, "x": 40 }
+],
+"skins": [
+	{ "name": "default", "attachments": { "s": { "p": { "type": "point", "x": 5, "y": 3 } } } }
+],
+"animations": {
+	"a": {
+		"bones": { "t": { "translate": [ { "x": 0 }, { "time": 1, "x": 30, "y": -20 } ] } },
+		"transform": { "two": [ { "mixY": 1 }, { "time": 1, "mixY": 0.2 } ] }
+	}
+}
+}

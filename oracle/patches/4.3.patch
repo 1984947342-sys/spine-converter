@@ -1,0 +1,30 @@
+--- a/src/spine/Atlas.cpp
++++ b/src/spine/Atlas.cpp
+@@ -286,6 +286,7 @@
+ 			_pages.add(page);
+ 		} else {
+ 			AtlasRegion *region = new (__FILE__, __LINE__) AtlasRegion();
++			region->_index = -1;
+ 			region->_page = page;
+ 			region->_rendererObject = page->texture;
+ 			region->_name = String(line->copy(), true);
+--- a/src/spine/Atlas.cpp
++++ b/src/spine/Atlas.cpp
+@@ -222,7 +222,7 @@
+ }
+ 
+ void Atlas::load(const char *begin, int length, const char *dir, bool createTexture) {
+-	static const char *formatNames[] = {"", "Alpha", "Intensity", "LuminanceAlpha", "RGB565", "RGBA4444", "RGB888", "RGBA8888"};
++	static const char *formatNames[] = {"Alpha", "Intensity", "LuminanceAlpha", "RGB565", "RGBA4444", "RGB888", "RGBA8888"};
+ 	static const char *textureFilterNames[] =
+ 		{"", "Nearest", "Linear", "MipMap", "MipMapNearestNearest", "MipMapLinearNearest", "MipMapNearestLinear", "MipMapLinearLinear"};
+ 
+@@ -261,7 +261,7 @@
+ 					page->width = entry[1].toInt();
+ 					page->height = entry[2].toInt();
+ 				} else if (entry[0].equals("format")) {
+-					page->format = (Format) indexOf(formatNames, 8, &entry[1]);
++					page->format = (Format) indexOf(formatNames, 7, &entry[1]);
+ 				} else if (entry[0].equals("filter")) {
+ #ifdef SPINE_UE4
+ 					page->minFilter = (SpineTextureFilter) indexOf(textureFilterNames, 8, &entry[1]);

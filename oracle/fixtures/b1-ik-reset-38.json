@@ -1,0 +1,25 @@
+{
+"skeleton": { "spine": "3.8.99" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "upper", "parent": "root", "length": 50 },
+	{ "name": "lower", "parent": "upper", "x": 50, "length": 50 },
+	{ "name": "s", "parent": "root", "x": -30, "y": 20, "rotation": 70 },
+	{ "name": "t", "parent": "root", "x": 60, "y": 40 }
+],
+"ik": [
+	{ "name": "leg", "order": 1, "bones": [ "upper", "lower" ], "target": "t", "mix": 0 }
+],
+"transform": [
+	{ "name": "aim", "bones": [ "lower" ], "target": "s", "rotateMix": 1, "translateMix": 0, "scaleMix": 0, "shearMix": 0 }
+],
+"animations": {
+	"idle": {
+		"bones": {
+			"s": {
+				"rotate": [ { "angle": 0 }, { "time": 1, "angle": 45 } ]
+			}
+		}
+	}
+}
+}

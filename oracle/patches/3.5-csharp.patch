@@ -1,0 +1,123 @@
+--- a/src/Bone.cs
++++ b/src/Bone.cs
+@@ -167,6 +167,10 @@
+ 					break;
+ 				}
+ 			case TransformMode.NoRotationOrReflection: {
++					if (SpcEditor.Old("no_rotation_35")) {
++						UpdateNoRotationOrReflectionOld(pa, pb, pc, pd, rotation, scaleX, scaleY, shearX, shearY);
++						break;
++					}
+ 					float s = pa * pa + pc * pc, prx;
+ 					if (s > 0.0001f) {
+ 						s = Math.Abs(pa * pd - pb * pc) / s;
+@@ -229,6 +233,39 @@
+ 			}
+ 		}
+ 
++		void UpdateNoRotationOrReflectionOld (float pa, float pb, float pc, float pd, float rotation, float scaleX, float scaleY, float shearX, float shearY) {
++			float psx = (float)Math.Sqrt(pa * pa + pc * pc), psy, prx;
++			if (psx > 0.0001f) {
++				psy = Math.Abs((pa * pd - pb * pc) / psx);
++				prx = MathUtils.Atan2(pc, pa) * MathUtils.RadDeg;
++			} else {
++				psx = 0;
++				psy = (float)Math.Sqrt(pb * pb + pd * pd);
++				prx = 90 - MathUtils.Atan2(pd, pb) * MathUtils.RadDeg;
++			}
++			pa = MathUtils.CosDeg(prx) * psx;
++			pb = MathUtils.CosDeg(prx + 90) * psy;
++			pc = MathUtils.SinDeg(prx) * psx;
++			pd = MathUtils.SinDeg(prx + 90) * psy;
++			float rotationY = rotation + 90 + shearY;
++			float la = MathUtils.CosDeg(rotation + shearX) * scaleX;
++			float lb = MathUtils.CosDeg(rotationY) * scaleY;
++			float lc = MathUtils.SinDeg(rotation + shearX) * scaleX;
++			float ld = MathUtils.SinDeg(rotationY) * scaleY;
++			float za = pa * la + pb * lc;
++			float zb = pa * lb + pb * ld;
++			float zc = pc * la + pd * lc;
++			float zd = pc * lb + pd * ld;
++			pa = MathUtils.CosDeg(-prx);
++			pb = MathUtils.CosDeg(90 - prx);
++			pc = MathUtils.SinDeg(-prx);
++			pd = MathUtils.SinDeg(90 - prx);
++			a = za * pa + zb * pc;
++			b = za * pb + zb * pd;
++			c = zc * pa + zd * pc;
++			d = zc * pb + zd * pd;
++		}
++
+ 		public void SetToSetupPose () {
+ 			BoneData data = this.data;
+ 			x = data.x;
+--- a/src/MathUtils.cs
++++ b/src/MathUtils.cs
+@@ -55,40 +55,28 @@
+ 
+ 		/// <summary>Returns the sine in radians from a lookup table.</summary>
+ 		static public float Sin (float radians) {
+-			return sin[(int)(radians * RadToIndex) & SIN_MASK];
++			return (float)Math.Sin(radians);
+ 		}
+ 
+ 		/// <summary>Returns the cosine in radians from a lookup table.</summary>
+ 		static public float Cos (float radians) {
+-			return sin[(int)((radians + PI / 2) * RadToIndex) & SIN_MASK];
++			return (float)Math.Cos(radians);
+ 		}
+ 			
+ 		/// <summary>Returns the sine in radians from a lookup table.</summary>
+ 		static public float SinDeg (float degrees) {
+-			return sin[(int)(degrees * DegToIndex) & SIN_MASK];
++			return (float)Math.Sin(degrees * DegRad);
+ 		}
+ 			
+ 		/// <summary>Returns the cosine in radians from a lookup table.</summary>
+ 		static public float CosDeg (float degrees) {
+-			return sin[(int)((degrees + 90) * DegToIndex) & SIN_MASK];
++			return (float)Math.Cos(degrees * DegRad);
+ 		}
+ 
+ 		/// <summary>Returns atan2 in radians, faster but less accurate than Math.Atan2. Average error of 0.00231 radians (0.1323
+ 		/// degrees), largest error of 0.00488 radians (0.2796 degrees).</summary>
+ 		static public float Atan2 (float y, float x) {
+-			if (x == 0f) {
+-				if (y > 0f) return PI / 2;
+-				if (y == 0f) return 0f;
+-				return -PI / 2;
+-			}
+-			float atan, z = y / x;
+-			if (Math.Abs(z) < 1f) {
+-				atan = z / (1f + 0.28f * z * z);
+-				if (x < 0f) return atan + (y < 0f ? -PI : PI);
+-				return atan;
+-			}
+-			atan = PI / 2 - z / (z * z + 0.28f);
+-			return y < 0f ? atan - PI : atan;
++			return (float)Math.Atan2(y, x);
+ 		}
+ 
+ 		static public float Clamp (float value, float min, float max) {
+--- a/src/PathConstraint.cs
++++ b/src/PathConstraint.cs
+@@ -110,7 +110,7 @@
+ 			} else {
+ 				tip = false;
+ 				Bone p = target.bone;
+-				offsetRotation *= p.a * p.d - p.b * p.c > 0 ? MathUtils.DegRad : -MathUtils.DegRad;
++				offsetRotation *= SpcEditor.Old("offset_reflect_35") || p.a * p.d - p.b * p.c > 0 ? MathUtils.DegRad : -MathUtils.DegRad;
+ 			}
+ 			for (int i = 0, p = 3; i < boneCount; i++, p += 3) {
+ 				Bone bone = (Bone)bones[i];
+--- a/src/TransformConstraint.cs
++++ b/src/TransformConstraint.cs
+@@ -70,7 +70,7 @@
+ 			float rotateMix = this.rotateMix, translateMix = this.translateMix, scaleMix = this.scaleMix, shearMix = this.shearMix;
+ 			Bone target = this.target;
+ 			float ta = target.a, tb = target.b, tc = target.c, td = target.d;
+-			float degRadReflect = (ta * td - tb * tc > 0) ? MathUtils.DegRad : -MathUtils.DegRad;
++			float degRadReflect = (SpcEditor.Old("offset_reflect_35") || ta * td - tb * tc > 0) ? MathUtils.DegRad : -MathUtils.DegRad;
+ 			float offsetRotation = data.offsetRotation * degRadReflect, offsetShearY = data.offsetShearY * degRadReflect;
+ 			var bones = this.bones;
+ 			var bonesItems = bones.Items;

@@ -1,0 +1,16 @@
+.{
+    .name = .spine_converter,
+    .version = "1.0.0",
+    .fingerprint = 0x44e812ebb9e7da0,
+    .minimum_zig_version = "0.17.1",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "include",
+        "docs",
+        "src",
+        "cli",
+        "LICENSE",
+    },
+}

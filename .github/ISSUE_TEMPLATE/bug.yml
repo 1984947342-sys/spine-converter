@@ -1,0 +1,56 @@
+name: Conversion problem
+description: A converted export poses, loads or renders wrong, or the converter fails
+labels: [bug]
+body:
+  - type: input
+    id: converter
+    attributes:
+      label: Converter version
+      description: Output of `spine-converter version` or `spc_library_version`
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Spine version the editor wrote and the format, such as 3.8.99 skel
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: Target
+      description: Target version and format, such as 4.3 json
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime
+      description: Runtime and version that loads the result, such as spine-cpp 4.3.12
+  - type: textarea
+    id: command
+    attributes:
+      label: Command or call
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Report
+      description: Report lines on stderr or the JSON of `spc_result_report`
+      render: text
+  - type: textarea
+    id: difference
+    attributes:
+      label: What differs
+      description: Expected and actual result, bone or attachment names, animation and time
+    validations:
+      required: true
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Files
+      options:
+        - label: I attached a small export that shows the problem and I have the right to share it

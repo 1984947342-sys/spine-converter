@@ -1,0 +1,130 @@
+--- a/src/Bone.cs
++++ b/src/Bone.cs
+@@ -216,7 +216,7 @@
+ 					za *= s;
+ 					zc *= s;
+ 					s = (float)Math.Sqrt(za * za + zc * zc);
+-					if (data.transformMode == TransformMode.NoScale
++					if (!SpcEditor.Old("reflect_37") && data.transformMode == TransformMode.NoScale
+ 						&& (pa * pd - pb * pc < 0) != (skeleton.scaleX < 0 != skeleton.scaleY < 0)) s = -s;
+ 
+ 					float r = MathUtils.PI / 2 + MathUtils.Atan2(zc, za);
+--- a/src/MathUtils.cs
++++ b/src/MathUtils.cs
+@@ -56,40 +56,28 @@
+ 
+ 		/// <summary>Returns the sine in radians from a lookup table.</summary>
+ 		static public float Sin (float radians) {
+-			return sin[(int)(radians * RadToIndex) & SIN_MASK];
++			return (float)Math.Sin(radians);
+ 		}
+ 
+ 		/// <summary>Returns the cosine in radians from a lookup table.</summary>
+ 		static public float Cos (float radians) {
+-			return sin[(int)((radians + PI / 2) * RadToIndex) & SIN_MASK];
++			return (float)Math.Cos(radians);
+ 		}
+ 			
+ 		/// <summary>Returns the sine in radians from a lookup table.</summary>
+ 		static public float SinDeg (float degrees) {
+-			return sin[(int)(degrees * DegToIndex) & SIN_MASK];
++			return (float)Math.Sin(degrees * DegRad);
+ 		}
+ 			
+ 		/// <summary>Returns the cosine in radians from a lookup table.</summary>
+ 		static public float CosDeg (float degrees) {
+-			return sin[(int)((degrees + 90) * DegToIndex) & SIN_MASK];
++			return (float)Math.Cos(degrees * DegRad);
+ 		}
+ 
+ 		/// <summary>Returns atan2 in radians, faster but less accurate than Math.Atan2. Average error of 0.00231 radians (0.1323
+ 		/// degrees), largest error of 0.00488 radians (0.2796 degrees).</summary>
+ 		static public float Atan2 (float y, float x) {
+-			if (x == 0f) {
+-				if (y > 0f) return PI / 2;
+-				if (y == 0f) return 0f;
+-				return -PI / 2;
+-			}
+-			float atan, z = y / x;
+-			if (Math.Abs(z) < 1f) {
+-				atan = z / (1f + 0.28f * z * z);
+-				if (x < 0f) return atan + (y < 0f ? -PI : PI);
+-				return atan;
+-			}
+-			atan = PI / 2 - z / (z * z + 0.28f);
+-			return y < 0f ? atan - PI : atan;
++			return (float)Math.Atan2(y, x);
+ 		}
+ 
+ 		static public float Clamp (float value, float min, float max) {
+--- a/src/PathConstraint.cs
++++ b/src/PathConstraint.cs
+@@ -427,6 +427,7 @@
+ 
+ 		static void AddCurvePosition (float p, float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2,
+ 			float[] output, int o, bool tangents) {
++			if (SpcEditor.Old("path_start_37") && (p < PathConstraint.Epsilon || float.IsNaN(p))) p = PathConstraint.Epsilon;
+ 			if (p < PathConstraint.Epsilon || float.IsNaN(p)) {
+ 				output[o] = x1;
+ 				output[o + 1] = y1;
+@@ -439,7 +440,7 @@
+ 			output[o] = x;
+ 			output[o + 1] = y;
+ 			if (tangents) {
+-				if (p < 0.001f)
++				if (p < 0.001f && !SpcEditor.Old("path_start_37"))
+ 					output[o + 2] = (float)Math.Atan2(cy1 - y1, cx1 - x1);
+ 				else
+ 					output[o + 2] = (float)Math.Atan2(y - (y1 * uu + cy1 * ut * 2 + cy2 * tt), x - (x1 * uu + cx1 * ut * 2 + cx2 * tt));
+--- a/src/SkeletonJson.cs
++++ b/src/SkeletonJson.cs
+@@ -604,7 +604,7 @@
+ 							(float)valueMap["time"],
+ 							GetFloat(valueMap, "mix", 1),
+ 							GetBoolean(valueMap, "bendPositive", true) ? 1 : -1,
+-							GetBoolean(valueMap, "compress", true),
++							GetBoolean(valueMap, "compress", false),
+ 							GetBoolean(valueMap, "stretch", false)
+ 						);
+ 						ReadCurve(valueMap, timeline, frameIndex);
+--- a/src/TransformConstraint.cs
++++ b/src/TransformConstraint.cs
+@@ -241,16 +241,19 @@
+ 				}
+ 
+ 				float scaleX = bone.ascaleX, scaleY = bone.ascaleY;
+-				if (scaleMix != 0) {
++				if (SpcEditor.Old("local_mix_37") ? scaleMix > 0 : scaleMix != 0) {
+ 					if (scaleX != 0) scaleX = (scaleX + (target.ascaleX - scaleX + data.offsetScaleX) * scaleMix) / scaleX;
+ 					if (scaleY != 0) scaleY = (scaleY + (target.ascaleY - scaleY + data.offsetScaleY) * scaleMix) / scaleY;
+ 				}
+ 
+ 				float shearY = bone.ashearY;
+-				if (shearMix != 0) {
++				if (SpcEditor.Old("local_mix_37") ? shearMix > 0 : shearMix != 0) {
+ 					float r = target.ashearY - shearY + data.offsetShearY;
+ 					r -= (16384 - (int)(16384.499999999996 - r / 360)) * 360;
+-					shearY += r * shearMix;
++					if (SpcEditor.Old("local_mix_37"))
++						bone.shearY += r * shearMix;
++					else
++						shearY += r * shearMix;
+ 				}
+ 
+ 				bone.UpdateWorldTransform(x, y, rotation, scaleX, scaleY, bone.ashearX, shearY);
+@@ -276,13 +279,13 @@
+ 				}
+ 
+ 				float scaleX = bone.ascaleX, scaleY = bone.ascaleY;
+-				if (scaleMix != 0) {
++				if (SpcEditor.Old("local_mix_37") ? scaleMix > 0 : scaleMix != 0) {
+ 					scaleX *= ((target.ascaleX - 1 + data.offsetScaleX) * scaleMix) + 1;
+ 					scaleY *= ((target.ascaleY - 1 + data.offsetScaleY) * scaleMix) + 1;
+ 				}
+ 
+ 				float shearY = bone.ashearY;
+-				if (shearMix != 0) shearY += (target.ashearY + data.offsetShearY) * shearMix;
++				if (SpcEditor.Old("local_mix_37") ? shearMix > 0 : shearMix != 0) shearY += (target.ashearY + data.offsetShearY) * shearMix;
+ 
+ 				bone.UpdateWorldTransform(x, y, rotation, scaleX, scaleY, bone.ashearX, shearY);
+ 			}

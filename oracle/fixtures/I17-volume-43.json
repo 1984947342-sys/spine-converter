@@ -1,0 +1,16 @@
+{
+"skeleton": { "spine": "4.3.01" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "b", "parent": "root", "length": 60 },
+	{ "name": "t", "parent": "root", "x": 50, "y": 20 }
+],
+"constraints": [
+	{ "name": "i", "type": "ik", "bones": [ "b" ], "target": "t", "compress": true, "scaleY": "volume" }
+],
+"animations": {
+	"a": {
+		"bones": { "t": { "translate": [ { "x": -40 }, { "time": 1, "x": -10, "y": -10 } ] } }
+	}
+}
+}

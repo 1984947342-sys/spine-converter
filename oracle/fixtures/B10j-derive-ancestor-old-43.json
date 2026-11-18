@@ -1,0 +1,20 @@
+{
+"skeleton": { "spine": "4.3.01" },
+"bones": [
+	{"name": "root"},
+	{"name": "p", "parent": "root", "length": 30},
+	{"name": "b", "parent": "p", "x": 30, "length": 30, "inherit": "noScale"},
+	{"name": "s", "parent": "root", "x": 40, "y": 40, "rotation": 60}
+],
+"constraints": [
+	{ "name": "t", "type": "transform", "bones": [ "b" ], "source": "s", "mixRotate": 0, "mixX": 0.5, "mixY": 0.7, "mixScaleX": 0, "mixShearY": 0,
+		"properties": { "x": { "to": { "x": {} } }, "y": { "to": { "y": {} } } } },
+	{ "name": "u", "type": "transform", "bones": [ "p" ], "source": "s", "mixRotate": 0.5, "mixX": 0, "mixScaleX": 0, "mixShearY": 0,
+		"properties": { "rotate": { "to": { "rotate": {} } } } }
+],
+"animations": {
+	"a": {
+		"bones": { "s": { "translate": [ { "x": -20 }, { "time": 1, "x": 20, "y": -30 } ] } }
+	}
+}
+}

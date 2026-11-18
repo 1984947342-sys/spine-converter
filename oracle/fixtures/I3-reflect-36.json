@@ -1,0 +1,14 @@
+{
+"skeleton": { "spine": "3.6.32", "width": 0, "height": 0 },
+"bones": [
+	{ "name": "root" },
+	{ "name": "flip", "parent": "root", "scaleY": -1, "rotation": 10 },
+	{ "name": "bone", "parent": "flip", "x": 30, "rotation": 15, "shearX": 20, "shearY": -10, "length": 40, "transform": "noScale" },
+	{ "name": "child", "parent": "bone", "x": 40, "length": 20 }
+],
+"slots": [ { "name": "s", "bone": "child" } ],
+"skins": { "default": {} },
+"animations": {
+	"a": { "bones": { "bone": { "shear": [ { "time": 0, "x": 20, "y": -10 }, { "time": 1, "x": 40, "y": 10 } ] } } }
+}
+}

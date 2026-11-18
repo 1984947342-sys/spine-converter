@@ -1,0 +1,6 @@
+from 4.3
+to 4.3
+code slider.linkedMesh.approximated
+editor slider_linked_43
+note dumpers reset the setup pose per sample, the unconstrained linked slot only differs in continuous playback
+expect fail

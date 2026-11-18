@@ -1,0 +1,26 @@
+<Project>
+    <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SpineConverter'">
+        <PackageId>SpineConverter</PackageId>
+        <Version>1.0.0</Version>
+        <Description>Convert Spine skeleton data between every version from 3.5 to 4.3</Description>
+        <PackageTags>spine;esotericsoftware;skeleton;converter</PackageTags>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>icon.png</PackageIcon>
+        <Authors>an5w1r</Authors>
+        <PackageProjectUrl>https://github.com/MindsMaster/spine-converter</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/MindsMaster/spine-converter.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(MSBuildProjectName)' == 'SpineConverter'">
+        <None Include="$(MSBuildThisFileDirectory)../../LICENSE" Pack="true" PackagePath="" Visible="false" />
+        <None Include="$(MSBuildThisFileDirectory)../../LICENSE-MIT" Pack="true" PackagePath="" Visible="false" />
+        <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="" Visible="false" />
+        <None Include="$(MSBuildThisFileDirectory)../../.github/icon.png" Pack="true" PackagePath="" Visible="false" />
+        <None Include="$(MSBuildThisFileDirectory)../../zig-out/dist/**/*.dll;$(MSBuildThisFileDirectory)../../zig-out/dist/**/*.so;$(MSBuildThisFileDirectory)../../zig-out/dist/**/*.dylib" Pack="true" PackagePath="runtimes/%(RecursiveDir)native/%(Filename)%(Extension)" Visible="false" />
+    </ItemGroup>
+    <PropertyGroup Condition="'$(MSBuildProjectName)' == 'Tests'">
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+</Project>

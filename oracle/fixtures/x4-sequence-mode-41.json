@@ -1,0 +1,37 @@
+{
+"skeleton": { "spine": "4.1.09-beta" },
+"bones": [
+	{ "name": "root" }
+],
+"slots": [
+	{ "name": "s", "bone": "root", "attachment": "frame" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"s": {
+				"frame": { "width": 10, "height": 10, "sequence": { "count": 3 } }
+			}
+		}
+	}
+],
+"animations": {
+	"play": {
+		"bones": {
+			"root": {
+				"rotate": [ { "value": 0 }, { "time": 1, "value": 10 } ]
+			}
+		},
+		"attachments": {
+			"default": {
+				"s": {
+					"frame": {
+						"sequence": [ { "mode": "pingpongReverse", "delay": 0.1 } ]
+					}
+				}
+			}
+		}
+	}
+}
+}

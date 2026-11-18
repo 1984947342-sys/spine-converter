@@ -1,0 +1,18 @@
+{
+"skeleton": { "spine": "4.1.24" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "p", "parent": "root", "rotation": 20, "length": 40, "transform": "onlyTranslation" },
+	{ "name": "c", "parent": "p", "x": 40, "rotation": 30, "length": 40 },
+	{ "name": "t", "parent": "root", "x": 50, "y": 30 }
+],
+"ik": [
+	{ "name": "i", "bones": [ "p", "c" ], "target": "t", "mix": 0.8 }
+],
+"animations": {
+	"a": {
+		"bones": { "t": { "translate": [ { "x": -20 }, { "time": 1, "x": 10, "y": 20 } ] } },
+		"ik": { "i": [ { "mix": 0.5 }, { "time": 1 } ] }
+	}
+}
+}

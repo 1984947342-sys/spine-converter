@@ -1,0 +1,20 @@
+{
+"skeleton": { "spine": "4.1.17" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "b", "parent": "root", "x": 20, "length": 40 },
+	{ "name": "t", "parent": "root", "x": 60, "scaleY": 2 }
+],
+"transform": [
+	{ "name": "stretch", "bones": [ "b" ], "target": "t", "mixRotate": 0, "mixX": 0, "mixScaleX": 0, "mixScaleY": 1, "mixShearY": 0 }
+],
+"animations": {
+	"pump": {
+		"bones": {
+			"t": {
+				"scale": [ { "x": 1, "y": 2 }, { "time": 1, "x": 1, "y": 3 } ]
+			}
+		}
+	}
+}
+}

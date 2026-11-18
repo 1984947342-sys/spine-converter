@@ -1,0 +1,20 @@
+{
+"skeleton": { "spine": "3.8.99" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "b", "parent": "root", "x": 20, "length": 40 },
+	{ "name": "t", "parent": "root", "x": 60 }
+],
+"transform": [
+	{ "name": "follow", "bones": [ "b" ], "target": "t", "local": true, "relative": true, "rotateMix": 0.5, "translateMix": 0, "scaleMix": 0, "shearMix": 0 }
+],
+"animations": {
+	"spin": {
+		"bones": {
+			"t": {
+				"rotate": [ { "angle": 0 }, { "time": 0.5, "angle": 170 }, { "time": 1, "angle": -20 } ]
+			}
+		}
+	}
+}
+}

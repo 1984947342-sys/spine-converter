@@ -1,0 +1,7 @@
+src/spine_converter/*.dll
+src/spine_converter/*.dylib
+src/spine_converter/*.so
+LICENSE
+LICENSE-MIT
+dist/
+__pycache__/

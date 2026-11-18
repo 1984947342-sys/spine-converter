@@ -1,0 +1,47 @@
+{
+"skeleton": { "spine": "4.1.26-beta" },
+"bones": [
+	{ "name": "root" }
+],
+"slots": [
+	{ "name": "s", "bone": "root", "attachment": "l" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"s": {
+				"m": {
+					"type": "mesh",
+					"uvs": [ 1, 1, 0, 1, 0, 0, 1, 0 ],
+					"triangles": [ 1, 2, 3, 1, 3, 0 ],
+					"vertices": [ 5, -5, -5, -5, -5, 5, 5, 5 ],
+					"hull": 4,
+					"width": 10,
+					"height": 10,
+					"sequence": { "count": 3 }
+				},
+				"l": { "type": "linkedmesh", "parent": "m", "width": 10, "height": 10, "sequence": { "count": 2 } }
+			}
+		}
+	}
+],
+"animations": {
+	"play": {
+		"bones": {
+			"root": {
+				"rotate": [ { "value": 0 }, { "time": 1, "value": 10 } ]
+			}
+		},
+		"attachments": {
+			"default": {
+				"s": {
+					"m": {
+						"sequence": [ { "mode": "loop", "delay": 0.1 } ]
+					}
+				}
+			}
+		}
+	}
+}
+}

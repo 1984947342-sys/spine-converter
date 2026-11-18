@@ -1,0 +1,25 @@
+{
+"skeleton": { "spine": "3.8.99" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "holder", "parent": "root", "x": 10, "y": 30 },
+	{ "name": "a", "parent": "root", "x": -20, "length": 20 },
+	{ "name": "b", "parent": "a", "x": 20, "length": 20 }
+],
+"slots": [
+	{ "name": "path", "bone": "holder", "attachment": "path" },
+	{ "name": "s", "bone": "b" }
+],
+"path": [ { "name": "follow", "bones": [ "a", "b" ], "target": "path", "rotateMode": "chainScale", "position": 0.2, "spacingMode": "percent", "spacing": 0.1, "rotateMix": -0.3, "translateMix": -0.4 } ],
+"skins": [ {
+	"name": "default",
+	"attachments": {
+		"path": { "path": { "type": "path", "lengths": [ 90, 200 ], "vertexCount": 6, "vertices": [ -40, -40, 0, 0, 40, 40, 80, 40, 120, 0, 160, -40 ] } }
+	}
+} ],
+"animations": {
+	"a": {
+		"path": { "follow": { "mix": [ { "rotateMix": -0.3, "translateMix": -0.4 }, { "time": 1, "rotateMix": 0, "translateMix": -0.1 } ] } }
+	}
+}
+}

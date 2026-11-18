@@ -1,0 +1,17 @@
+{
+"skeleton": { "spine": "4.2.22" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "p", "parent": "root", "length": 40, "shearX": 20 },
+	{ "name": "c", "parent": "p", "x": 40, "length": 40 },
+	{ "name": "t", "parent": "root", "x": 50, "y": 30 }
+],
+"ik": [
+	{ "name": "i", "bones": [ "p", "c" ], "target": "t" }
+],
+"animations": {
+	"a": {
+		"bones": { "t": { "translate": [ { "x": -20 }, { "time": 1, "x": 10, "y": 20 } ] } }
+	}
+}
+}

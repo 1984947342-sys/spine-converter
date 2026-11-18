@@ -1,0 +1,6 @@
+from 3.6.32
+to 3.6
+code clipping.vertices.approximated
+rewrite yes
+note spine-csharp never ignores a clipping polygon below 3 vertices and the dumps show no slot it clips away
+expect fail

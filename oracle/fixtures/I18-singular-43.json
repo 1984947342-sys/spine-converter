@@ -1,0 +1,18 @@
+{
+"skeleton": { "spine": "4.3.01" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "p", "parent": "root", "rotation": 30, "length": 30 },
+	{ "name": "c", "parent": "p", "x": 30, "length": 30 },
+	{ "name": "n", "parent": "p", "x": 30, "rotation": 20, "length": 30, "inherit": "noRotationOrReflection" },
+	{ "name": "t", "parent": "root", "x": 40, "y": 50 }
+],
+"constraints": [
+	{ "name": "i", "type": "ik", "bones": [ "c" ], "target": "t" }
+],
+"animations": {
+	"a": {
+		"bones": { "p": { "scalex": [ { "value": 0.02 }, { "time": 1, "value": -0.01 } ] } }
+	}
+}
+}

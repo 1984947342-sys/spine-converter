@@ -1,0 +1,26 @@
+{
+"skeleton": { "spine": "4.1.24" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "p", "parent": "root", "rotation": 30, "scaleX": 2, "scaleY": 2, "length": 30 },
+	{ "name": "b", "parent": "p", "x": 30, "rotation": 40, "scaleX": 1.5, "length": 30, "transform": "noScale" },
+	{ "name": "bb", "parent": "b", "x": 30, "length": 20 },
+	{ "name": "s", "parent": "root", "x": 40, "y": 40, "rotation": 60, "scaleX": 1.4 },
+	{ "name": "g", "parent": "root", "x": -40, "y": 50 }
+],
+"transform": [
+	{ "name": "t", "bones": [ "b" ], "target": "s", "mixRotate": 0.5, "mixX": 0, "mixScaleX": 0.6, "mixShearY": 0 }
+],
+"ik": [
+	{ "name": "i", "order": 1, "bones": [ "p" ], "target": "g", "mix": 0.5 }
+],
+"animations": {
+	"a": {
+		"bones": {
+			"g": { "translate": [ { "x": -20 }, { "time": 1, "x": 20, "y": -30 } ] },
+			"s": { "rotate": [ { "value": 0 }, { "time": 1, "value": 50 } ] },
+			"b": { "rotate": [ { "value": 0 }, { "time": 1, "value": 25 } ] }
+		}
+	}
+}
+}

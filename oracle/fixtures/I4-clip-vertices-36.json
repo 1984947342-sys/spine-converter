@@ -1,0 +1,18 @@
+{
+"skeleton": { "spine": "3.6.32", "width": 0, "height": 0 },
+"bones": [ { "name": "root" } ],
+"slots": [
+	{ "name": "clip", "bone": "root", "attachment": "clip" },
+	{ "name": "s", "bone": "root" }
+],
+"skins": {
+	"default": {
+		"clip": {
+			"clip": { "type": "clipping", "end": "s", "vertexCount": 2, "vertices": [ -20, -20, 20, 20 ] }
+		}
+	}
+},
+"animations": {
+	"a": { "bones": { "root": { "rotate": [ { "time": 0, "angle": 0 }, { "time": 1, "angle": 30 } ] } } }
+}
+}

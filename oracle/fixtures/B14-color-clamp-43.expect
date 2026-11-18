@@ -1,0 +1,5 @@
+from 4.2
+to 4.3
+code color.clamp.approximated
+note spine-csharp 4.2 clamps every color timeline unlike libgdx and spine-cpp, the native dumpers show the difference
+expect fail

@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md", "docs/**", "LICENSE*"]
+  pull_request:
+    paths-ignore: ["**.md", "docs/**", "LICENSE*"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.1
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: bindings/js/package.json
+      # the oldest supported Python, Windows keeps the image one
+      - uses: actions/setup-python@v6
+        if: runner.os != 'Windows'
+        with:
+          python-version: "3.10"
+
+      - run: tools/versions.sh
+      - run: zig fmt --check src cli tests oracle bindings/godot/src build.zig
+      - name: Runtime identifier
+        run: |
+          case "$RUNNER_OS-$RUNNER_ARCH" in
+            Linux-X64) rid=linux-x64 ;;
+            Linux-ARM64) rid=linux-arm64 ;;
+            Windows-X64) rid=win-x64 ;;
+            Windows-ARM64) rid=win-arm64 ;;
+            macOS-X64) rid=osx-x64 ;;
+            macOS-ARM64) rid=osx-arm64 ;;
+          esac
+          echo "RID=$rid" >>"$GITHUB_ENV"
+      - run: zig build test
+      - run: zig build dist wasm -Drid="$RID"
+
+      - name: C# binding
+        run: dotnet run --project bindings/csharp/Tests
+      - name: Python binding
+        run: |
+          SPINE_CONVERTER_LIBRARY=$(ls zig-out/dist/$RID/*) PYTHONPATH=bindings/python/src \
+            python -m unittest discover -s bindings/python/tests
+      - name: JavaScript binding
+        working-directory: bindings/js
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run build
+          pnpm test
+      - name: Godot extension
+        if: runner.os == 'Linux'
+        run: |
+          zig build godot -Drid="$RID"
+          python tools/godot_package.py "$RUNNER_TEMP/godot.zip" linux.x86_64
+          # the oldest supported and the newest tested release
+          for version in 4.3 4.7.2; do
+            curl -fsSL -o "$RUNNER_TEMP/godot-$version.zip" \
+              "https://github.com/godotengine/godot/releases/download/$version-stable/Godot_v$version-stable_linux.x86_64.zip"
+            python -m zipfile -e "$RUNNER_TEMP/godot-$version.zip" "$RUNNER_TEMP/godot-$version"
+            chmod +x "$RUNNER_TEMP/godot-$version/Godot_v$version-stable_linux.x86_64"
+            bindings/godot/tests/run.sh "$RUNNER_TEMP/godot-$version/Godot_v$version-stable_linux.x86_64" "$RUNNER_TEMP/godot.zip"
+          done

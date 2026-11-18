@@ -1,0 +1,77 @@
+--- a/src/spine/SkeletonJson.cpp
++++ b/src/spine/SkeletonJson.cpp
+@@ -1168,7 +1168,7 @@
+ 			mixY = mixY2;
+ 			mixScaleX = mixScaleX2;
+ 			mixScaleY = mixScaleY2;
+-			mixScaleX = mixScaleX2;
++			mixShearY = mixShearY2;
+ 			keyMap = nextMap;
+ 		}
+ 
+--- a/src/spine/IkConstraint.cpp
++++ b/src/spine/IkConstraint.cpp
+@@ -203,8 +203,9 @@
+ 			r0 = q / c2;
+ 			r1 = c0 / q;
+ 			r = MathUtil::abs(r0) < MathUtil::abs(r1) ? r0 : r1;
+-			if (r * r <= dd) {
+-				y = MathUtil::sqrt(dd - r * r) * bendDir;
++			float ddrr = dd - r * r;
++			if (ddrr >= 0) {
++				y = MathUtil::sqrt(ddrr) * bendDir;
+ 				a1 = ta - MathUtil::atan2(y, r);
+ 				a2 = MathUtil::atan2(y / psy, (r - l1) / psx);
+ 				goto break_outer;
+--- a/src/spine/Atlas.cpp
++++ b/src/spine/Atlas.cpp
+@@ -293,6 +293,7 @@
+ 			_pages.add(page);
+ 		} else {
+ 			AtlasRegion *region = new (__FILE__, __LINE__) AtlasRegion();
++			region->index = -1;
+ 			region->page = page;
+ 			region->name = String(line->copy(), true);
+ 			while (true) {
+--- a/src/spine/Atlas.cpp
++++ b/src/spine/Atlas.cpp
+@@ -228,7 +228,7 @@
+ }
+ 
+ void Atlas::load(const char *begin, int length, const char *dir, bool createTexture) {
+-	static const char *formatNames[] = {"", "Alpha", "Intensity", "LuminanceAlpha", "RGB565", "RGBA4444", "RGB888",
++	static const char *formatNames[] = {"Alpha", "Intensity", "LuminanceAlpha", "RGB565", "RGBA4444", "RGB888",
+ 										"RGBA8888"};
+ 	static const char *textureFilterNames[] = {"", "Nearest", "Linear", "MipMap", "MipMapNearestNearest",
+ 											   "MipMapLinearNearest",
+@@ -270,7 +270,7 @@
+ 					page->width = entry[1].toInt();
+ 					page->height = entry[2].toInt();
+ 				} else if (entry[0].equals("format")) {
+-					page->format = (Format) indexOf(formatNames, 8, &entry[1]);
++					page->format = (Format) indexOf(formatNames, 7, &entry[1]);
+ 				} else if (entry[0].equals("filter")) {
+ 					page->minFilter = (TextureFilter) indexOf(textureFilterNames, 8, &entry[1]);
+ 					page->magFilter = (TextureFilter) indexOf(textureFilterNames, 8, &entry[2]);
+--- a/src/spine/SkeletonJson.cpp
++++ b/src/spine/SkeletonJson.cpp
+@@ -950,7 +950,7 @@
+ 				toColor(color2, Json::getString(keyMap, "dark", 0), false);
+ 
+ 				for (frame = 0, bezier = 0;; ++frame) {
+-					timeline->setFrame(frame, time, color.r, color.g, color.b, color.a, color2.g, color2.g, color2.b);
++					timeline->setFrame(frame, time, color.r, color.g, color.b, color.a, color2.r, color2.g, color2.b);
+ 					nextMap = keyMap->_next;
+ 					if (!nextMap) {
+ 						// timeline.shrink(); // BOZO
+--- a/src/spine/TransformConstraint.cpp
++++ b/src/spine/TransformConstraint.cpp
+@@ -309,7 +309,7 @@
+ 		if (mixShearY != 0) {
+ 			float r = target._ashearY - shearY + _data._offsetShearY;
+ 			r -= (16384 - (int) (16384.499999999996 - r / 360)) * 360;
+-			bone._shearY += r * mixShearY;
++			shearY += r * mixShearY;
+ 		}
+ 
+ 		bone.updateWorldTransform(x, y, rotation, scaleX, scaleY, bone._ashearX, shearY);

@@ -1,0 +1,36 @@
+name: Oracle
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  oracle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.1
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Fetch exports and runtimes
+        run: |
+          git clone --filter=blob:none --no-checkout https://github.com/EsotericSoftware/spine-runtimes "$RUNNER_TEMP/spine-runtimes"
+          tools/fetch-corpus.sh "$RUNNER_TEMP/spine-runtimes"
+          tools/fetch-runtimes.sh "$RUNNER_TEMP/spine-runtimes"
+      - run: oracle/all.sh
+        env:
+          ORACLE_VARIANTS: "40 6"
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: oracle-logs
+          path: zig-out/oracle

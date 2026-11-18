@@ -1,0 +1,33 @@
+{
+"skeleton": { "spine": "4.3.10" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "mid", "parent": "root", "x": 10, "length": 40 },
+	{ "name": "arm", "parent": "mid", "x": 40, "length": 50 },
+	{ "name": "hand", "parent": "arm", "x": 50, "rotation": 10, "length": 30 },
+	{ "name": "x", "parent": "root", "x": -40, "length": 20 },
+	{ "name": "t", "parent": "root", "x": 100, "y": 30 }
+],
+"constraints": [
+	{ "name": "follow", "type": "transform", "bones": [ "hand" ], "source": "t", "mixRotate": 0.7, "mixX": 0.4, "mixScaleX": 0, "mixShearY": 0,
+		"properties": { "rotate": { "to": { "rotate": {} } }, "x": { "to": { "x": {} } }, "y": { "to": { "y": {} } } } },
+	{ "name": "reach", "type": "ik", "bones": [ "x" ], "target": "hand" },
+	{ "name": "lift", "type": "transform", "bones": [ "arm" ], "source": "t", "rotation": 20, "mixRotate": 0.3, "mixX": 0, "mixScaleX": 0, "mixShearY": 0,
+		"properties": { "rotate": { "to": { "rotate": {} } } } },
+	{ "name": "lean", "type": "transform", "bones": [ "mid" ], "source": "t", "rotation": -15, "mixRotate": 0.4, "mixX": 0, "mixScaleX": 0, "mixShearY": 0,
+		"properties": { "rotate": { "to": { "rotate": {} } } } }
+],
+"animations": {
+	"move": {
+		"bones": {
+			"t": {
+				"rotate": [ { "value": 0 }, { "time": 1, "value": 60 } ],
+				"translate": [ { "x": 0, "y": 0 }, { "time": 1, "x": 40, "y": -20 } ]
+			},
+			"hand": {
+				"rotate": [ { "value": 0 }, { "time": 1, "value": 25 } ]
+			}
+		}
+	}
+}
+}

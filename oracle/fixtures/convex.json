@@ -1,0 +1,39 @@
+{
+"skeleton": { "hash": "", "spine": "4.3.75-beta" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "b", "parent": "root", "x": 20, "y": 10, "rotation": 15, "scaleX": 1.2, "scaleY": 0.8, "shearX": 10 }
+],
+"slots": [
+	{ "name": "concave", "bone": "b", "attachment": "concave" },
+	{ "name": "square", "bone": "b", "attachment": "square" },
+	{ "name": "collinear", "bone": "root", "attachment": "collinear" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"concave": {
+				"concave": { "type": "clipping", "end": "concave", "convex": true, "vertexCount": 6, "vertices": [ 0, 0, 60, 0, 30, 20, 60, 60, 0, 60, 10, 30 ] }
+			},
+			"square": {
+				"square": { "type": "clipping", "end": "square", "convex": true, "vertexCount": 4, "vertices": [ -40, -40, -10, -40, -10, -10, -40, -10 ] }
+			},
+			"collinear": {
+				"collinear": { "type": "clipping", "end": "collinear", "convex": true, "vertexCount": 5, "vertices": [ 0, 0, 20, 0, 40, 0, 40, 40, 0, 40 ] }
+			}
+		}
+	}
+],
+"animations": {
+	"spin": {
+		"bones": {
+			"b": {
+				"rotate": [ { "value": 0 }, { "time": 1, "value": 270 } ],
+				"scale": [ {}, { "time": 0.5, "x": -1.5, "y": 0.7 }, { "time": 1, "x": 0.5, "y": -2 } ],
+				"shear": [ {}, { "time": 1, "x": 30, "y": -20 } ]
+			}
+		}
+	}
+}
+}

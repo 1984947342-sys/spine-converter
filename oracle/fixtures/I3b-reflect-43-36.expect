@@ -1,0 +1,5 @@
+from 3.6.32
+to 4.3
+code bone.reflection.approximated
+editor reflect_order_36
+rewrite yes

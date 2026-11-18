@@ -1,0 +1,20 @@
+{
+"skeleton": { "spine": "3.8.55", "width": 0, "height": 0 },
+"bones": [
+	{ "name": "root" },
+	{ "name": "turned", "parent": "root", "rotation": 40 },
+	{ "name": "bone", "parent": "turned", "x": 20, "length": 40, "transform": "onlyTranslation" },
+	{ "name": "arm", "parent": "turned", "x": -20, "y": 30, "length": 40, "transform": "noRotationOrReflection" },
+	{ "name": "hand", "parent": "arm", "length": 30 },
+	{ "name": "goal", "parent": "root", "x": 60, "y": 50 }
+],
+"slots": [ { "name": "s", "bone": "bone" } ],
+"ik": [
+	{ "name": "one", "bones": [ "bone" ], "target": "goal" },
+	{ "name": "two", "order": 1, "bones": [ "arm", "hand" ], "target": "goal" }
+],
+"skins": [ { "name": "default" } ],
+"animations": {
+	"a": { "bones": { "turned": { "rotate": [ { "angle": 0 }, { "time": 1, "angle": 80 } ] }, "goal": { "translate": [ { "x": 0 }, { "time": 1, "x": -40, "y": 20 } ] } } }
+}
+}

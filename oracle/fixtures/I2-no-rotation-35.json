@@ -1,0 +1,13 @@
+{
+"skeleton": { "spine": "3.5.03-beta", "width": 0, "height": 0 },
+"bones": [
+	{ "name": "root" },
+	{ "name": "parent", "parent": "root", "rotation": 30, "scaleX": 2, "length": 40 },
+	{ "name": "bone", "parent": "parent", "x": 40, "rotation": 10, "scaleX": 1.5, "length": 30, "transform": "noRotationOrReflection" }
+],
+"slots": [ { "name": "s", "bone": "bone" } ],
+"skins": { "default": {} },
+"animations": {
+	"a": { "bones": { "parent": { "rotate": [ { "time": 0, "angle": 0 }, { "time": 1, "angle": 60 } ] } } }
+}
+}
