@@ -8,9 +8,10 @@ The addon is a GDExtension that registers the class `SpineConverter`. Its static
 |---|---|
 | Godot | 4.3 or later, single precision builds |
 | Editor and exports | Windows x86_64, x86_32 and arm64, macOS universal, Linux x86_64 and arm64 |
+| Exports | Android arm64 |
 | Tests | `tests/run.sh` on Godot 4.3 and 4.7.2 |
 
-Android, iOS and Web exports have no library in this addon.
+Android arm64 is built by `zig build godot`. iOS and Web exports have no library in this addon.
 
 ## Installation
 

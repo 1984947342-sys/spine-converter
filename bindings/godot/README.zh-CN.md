@@ -8,9 +8,10 @@
 |---|---|
 | Godot | 4.3 及以上，单精度构建 |
 | 编辑器与导出 | Windows x86_64、x86_32 和 arm64，macOS universal，Linux x86_64 和 arm64 |
+| 导出 | Android arm64 |
 | 测试 | `tests/run.sh`，在 Godot 4.3 和 4.7.2 上运行 |
 
-Android、iOS 和 Web 导出在该插件中没有对应的库。
+Android arm64 由 `zig build godot` 构建。iOS 和 Web 导出在该插件中没有对应的库。
 
 ## 安装
 
