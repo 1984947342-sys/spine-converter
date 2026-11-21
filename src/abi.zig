@@ -99,6 +99,20 @@ pub const Result = struct {
 
 const default_allocator = if (builtin.cpu.arch.isWasm()) std.heap.wasm_allocator else std.heap.page_allocator;
 
+// page_allocator reads AT_PAGESZ, Zig exports getauxval only in executables
+const android = builtin.abi.isAndroid() and !builtin.link_libc;
+comptime {
+    if (android) @export(&androidGetauxval, .{ .name = "getauxval", .linkage = .weak });
+}
+fn androidGetauxval(index: usize) callconv(.c) usize {
+    const auxv = std.os.linux.elf_aux_maybe orelse return 0;
+    var i: usize = 0;
+    while (auxv[i].a_type != std.elf.AT.NULL) : (i += 1) {
+        if (auxv[i].a_type == index) return auxv[i].a_un.a_val;
+    }
+    return 0;
+}
+
 pub export fn spc_abi_version() u32 {
     return 1;
 }
