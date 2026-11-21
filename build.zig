@@ -15,7 +15,8 @@ const oracles = [_]Oracle{
 };
 
 /// rid is the .NET runtime identifier the C# binding loads from, godot the feature tag of the Godot extension
-const Dist = struct { triple: []const u8, rid: []const u8, godot: []const u8 };
+/// android marks a target that builds the Godot extension only, no C# and no CLI
+const Dist = struct { triple: []const u8, rid: []const u8, godot: []const u8, android: bool = false };
 const dists = [_]Dist{
     .{ .triple = "x86_64-windows", .rid = "win-x64", .godot = "windows.x86_64" },
     .{ .triple = "aarch64-windows", .rid = "win-arm64", .godot = "windows.arm64" },
@@ -24,6 +25,7 @@ const dists = [_]Dist{
     .{ .triple = "x86_64-macos.10.15", .rid = "osx-x64", .godot = "macos.x86_64" },
     .{ .triple = "x86_64-linux", .rid = "linux-x64", .godot = "linux.x86_64" },
     .{ .triple = "aarch64-linux", .rid = "linux-arm64", .godot = "linux.arm64" },
+    .{ .triple = "aarch64-linux-android.34", .rid = "android-arm64", .godot = "android.arm64", .android = true },
 };
 
 pub fn build(b: *std.Build) void {
@@ -53,34 +55,44 @@ pub fn build(b: *std.Build) void {
     for (dists) |d| {
         if (only) |rid| if (!std.mem.eql(u8, rid, d.rid)) continue;
         const query = std.Target.Query.parse(.{ .arch_os_abi = d.triple }) catch unreachable;
-        const abi = abiModule(b, b.createModule(coreOptions(b, b.resolveTargetQuery(query), .ReleaseFast)));
-        const shared = b.addLibrary(.{
-            .name = "spine_converter",
-            .linkage = .dynamic,
-            .root_module = abi,
-        });
-        shared.root_module.strip = true;
+        const resolved = b.resolveTargetQuery(query);
+        const abi_core = b.createModule(coreOptions(b, resolved, .ReleaseFast));
+        // Zig ships no Android libc, syscalls only
+        if (d.android) abi_core.link_libc = false;
+        const abi = abiModule(b, abi_core);
         const dir: std.Build.InstallDir = .{ .custom = b.fmt("dist/{s}", .{d.rid}) };
-        dist.dependOn(&b.addInstallArtifact(shared, .{
-            .dest_dir = .{ .override = dir },
-            .implib_dir = if (query.os_tag == .windows) .{ .override = .{ .custom = b.fmt("dist-implib/{s}", .{d.rid}) } } else .disabled,
-            .pdb_dir = .disabled,
-            .h_dir = .disabled,
-        }).step);
+        if (!d.android) {
+            const shared = b.addLibrary(.{
+                .name = "spine_converter",
+                .linkage = .dynamic,
+                .root_module = abi,
+            });
+            shared.root_module.strip = true;
+            dist.dependOn(&b.addInstallArtifact(shared, .{
+                .dest_dir = .{ .override = dir },
+                .implib_dir = if (query.os_tag == .windows) .{ .override = .{ .custom = b.fmt("dist-implib/{s}", .{d.rid}) } } else .disabled,
+                .pdb_dir = .disabled,
+                .h_dir = .disabled,
+            }).step);
+        }
 
         const extension = b.addLibrary(.{
             .name = "spine_converter_godot",
             .linkage = .dynamic,
             .root_module = b.createModule(.{
                 .root_source_file = b.path("bindings/godot/src/extension.zig"),
-                .target = abi.resolved_target,
+                .target = resolved,
                 .optimize = .ReleaseFast,
                 .strip = true,
+                .link_libc = false,
                 .imports = &.{.{ .name = "abi", .module = abi }},
             }),
         });
+        // Android names the library after its ABI
+        const artifact_name = if (d.android) b.fmt("libspine_converter_godot.{s}.so", .{d.godot}) else null;
         godot.dependOn(&b.addInstallArtifact(extension, .{
             .dest_dir = .{ .override = .{ .custom = b.fmt("godot/{s}", .{d.godot}) } },
+            .dest_sub_path = artifact_name,
             .implib_dir = .disabled,
             .pdb_dir = .disabled,
             .h_dir = .disabled,
