@@ -1,0 +1,45 @@
+name: Android
+
+on:
+  push:
+    branches: [main]
+    paths: ["build.zig", "build.zig.zon", "src/**", "bindings/godot/**", "tools/godot_package.py", ".github/workflows/android.yml"]
+  pull_request:
+    paths: ["build.zig", "build.zig.zon", "src/**", "bindings/godot/**", "tools/godot_package.py", ".github/workflows/android.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  godot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - run: zig build godot -Drid=android-arm64
+      # catches a layout change before the archive hides it
+      - name: Check the library
+        run: |
+          file zig-out/godot/android.arm64/libspine_converter_godot.android.arm64.so
+          file zig-out/godot/android.arm64/libspine_converter_godot.android.arm64.so | grep -q "ARM aarch64"
+          readelf -d zig-out/godot/android.arm64/libspine_converter_godot.android.arm64.so | grep -q NEEDED && exit 1 || true
+          readelf --dyn-syms -W zig-out/godot/android.arm64/libspine_converter_godot.android.arm64.so | grep -q "spine_converter_godot_init"
+          readelf --dyn-syms -W zig-out/godot/android.arm64/libspine_converter_godot.android.arm64.so | awk '$7=="UND" && $8!="" {print $8; found=1} END {exit found}'
+      - run: python tools/godot_package.py spine-converter-godot-android-arm64.zip android.arm64
+      - run: python -m zipfile -l spine-converter-godot-android-arm64.zip
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: godot-android-arm64
+          path: spine-converter-godot-android-arm64.zip
